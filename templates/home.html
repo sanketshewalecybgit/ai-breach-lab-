@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Advanced AI Attack Surfaces{% endblock %}
+{% block content %}
+<section class="hero-panel" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="edition-tag">HANDS-ON</span> PRACTICAL AI SECURITY</div>
+    <h1 id="hero-title">AI BreachLab<span class="blue-dot">.</span></h1>
+    <p class="hero-subtitle">Advanced AI Attack Surfaces</p>
+    <p class="hero-description">Follow the request. Find the boundary.<br>Discover what happens when an AI assistant has more access than it should.</p>
+    <div class="d-flex flex-wrap gap-3 mt-4">
+      <a class="btn btn-primary btn-lg" href="{{ url_for('lab') if identity else url_for('login') }}">{{ 'Continue your investigation' if identity else 'Launch the lab' }} <span aria-hidden="true">↗</span></a>
+      <a class="btn btn-outline-primary btn-lg" href="{{ url_for('architecture') }}">Explore architecture <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="hero-topics"><span>Tool calling</span><span>Excessive agency</span><span>Data exposure</span><span>Attack chains</span></div>
+  </div>
+  <aside class="mission-card" aria-label="Lab scenario">
+    <div class="mission-topline"><span>SCENARIO / 01</span><span class="simulation-label">LOCAL SIMULATION</span></div>
+    <div class="scenario-symbol" aria-hidden="true">N<span>↗</span></div>
+    <h2>Inside NovaCart.</h2>
+    <p>A customer support assistant.<br>Customer data. Business tools.<br>Trust boundaries waiting to be tested.</p>
+    <ol class="attack-path" aria-label="Request path"><li>Prompt</li><li>Agent</li><li>Tool</li><li>Action</li></ol>
+    <div class="mission-footer"><span>YOUR OBJECTIVE</span><strong>Investigate. Prove. Defend.</strong></div>
+  </aside>
+</section>
+<section class="lab-metrics" aria-label="Training at a glance">
+  <div><strong>07<span> + 01</span></strong><span>Core challenges + advanced mission</span></div>
+  <div><strong>03</strong><span>Difficulty levels, from beginner to advanced</span></div>
+  <div><strong>{{ '%02d'|format(solved_count) }}<span> / 07</span></strong><span>Core challenges completed</span></div>
+  <a href="{{ url_for('lab') }}">View your<br>challenge dashboard <span aria-hidden="true">↗</span></a>
+</section>
+<section class="learning-section" aria-labelledby="levels-title">
+  <div class="section-heading"><div><div class="eyebrow">CHOOSE YOUR DIFFICULTY</div><h2 id="levels-title">Start curious. Build confidence.</h2></div><p>Three tracks. Eight investigations.<br>Evidence at every step.</p></div>
+  {% include '_levels.html' %}
+</section>
+<section class="learning-section" aria-labelledby="learning-title">
+  <div class="section-heading"><div><div class="eyebrow">THE INVESTIGATION WORKFLOW</div><h2 id="learning-title">Go beyond the prompt.</h2></div><p>Trace the action. Understand the failure.<br>Verify the control that prevents it.</p></div>
+  <div class="row g-4">{% for number, title, text in [('01','Investigate the surface','Explore the support assistant, customer data, and the tools it can call. Find where access exceeds authority.'),('02','Follow the evidence','Inspect tool arguments, policy decisions, and backend results. Every completed challenge is backed by executed actions.'),('03','Validate the defense','Switch to secure mode and replay your requests. See how authorization and approval controls change the outcome.')] %}<div class="col-md-4"><article class="feature"><span class="step-number">{{ number }} <span aria-hidden="true">/</span></span><h3>{{ title }}</h3><p>{{ text }}</p></article></div>{% endfor %}</div>
+</section>
+<div class="notice mt-4"><strong>Your training environment</strong><p class="mb-0">NovaCart is a fictional customer support scenario powered by a local mock agent. Use fictional data only. Refunds never move money and tickets never send email. One instance is intended for one student; switching identities shares the same progress.</p></div>
+{% endblock %}

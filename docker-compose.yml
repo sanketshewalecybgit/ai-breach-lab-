@@ -1,0 +1,18 @@
+services:
+  lab:
+    build: .
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - lab-data:/lab/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - lab-local
+networks:
+  lab-local:
+    internal: true
+volumes:
+  lab-data:

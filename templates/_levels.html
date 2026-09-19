@@ -1,0 +1,15 @@
+<div class="row g-3 level-grid" aria-label="Difficulty levels">
+{% for key, level in levels.items() %}
+  {% set stats = level_progress[key] %}
+  <div class="col-md-4">
+    <a class="level-card level-{{ key }} {% if selected_level|default('all') == key %}is-selected{% endif %}" href="{{ url_for('lab', level=key) }}" {% if selected_level|default('all') == key %}aria-current="page"{% endif %}>
+      <div class="level-card-top"><span class="difficulty-badge difficulty-{{ key }}">{{ level.label }}</span><span class="level-index" aria-hidden="true">0{{ loop.index }}</span></div>
+      <h3>{{ level.subtitle }}</h3>
+      <p>{{ level.description }}</p>
+      <div class="level-card-progress"><strong>{{ stats.solved }} / {{ stats.total }} solved</strong><span>{% if stats.optional %}{{ stats.total - stats.optional }} core + {{ stats.optional }} optional{% else %}{{ stats.total }} core challenges{% endif %}</span></div>
+      <progress value="{{ stats.solved }}" max="{{ stats.total }}" aria-label="{{ level.label }} challenge completion">{{ stats.solved }} / {{ stats.total }}</progress>
+      <span class="level-card-link">{{ 'Review' if stats.solved == stats.total else 'Explore' }} {{ level.label|lower }} challenges <span aria-hidden="true">→</span></span>
+    </a>
+  </div>
+{% endfor %}
+</div>

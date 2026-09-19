@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block title %}Request could not be completed{% endblock %}{% block content %}<div class="page-heading"><div class="eyebrow">{{ error.code }}</div><h1>Request could not be completed</h1><p>{{ error.description }}</p><a class="btn btn-primary" href="{{ url_for('home') }}">Return to lab home</a></div>{% endblock %}
