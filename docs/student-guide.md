@@ -64,3 +64,11 @@ Start with **Beginner** (challenges 1–2) to compare identity, ownership, and t
 Use the three track cards or the difficulty filters on the mission board. Each challenge displays its level and an investigation approach. All levels are available from the start, and all retain three progressive hints. Difficulty groups the investigations by complexity; vulnerable/secure mode independently controls the backend defenses.
 
 Your level progress is saved automatically from executed evidence. An attack chain may complete challenges in more than one level. Seven core challenges complete the lab; the optional advanced challenge counts toward its track but is not required for the solved screen.
+
+## Expert investigations
+
+Choose **Expert** in the navigation for five independent investigations with randomized companies, customers, orders, and documents. Start with the business brief and case file, discover identifiers, and use the Expert assistant to establish actual impact. Vulnerability explanations unlock after evidence confirms an objective. Task syntax help and three progressive hints per objective remain available.
+
+Expert has editable reference material, a delivery integration description, persistent memory, a human approval desk, local outboxes, and downloadable evidence. Its progress is separate from the seven-core solved screen. See the [Expert guide](expert-guide.md) for the workflow and retesting instructions.
+
+Alice and Bob have separate Expert cases. The security mode remains shared. Generating a fresh Expert case clears only that identity’s Expert work and retains the mode; the footer’s full lab reset clears both Expert cases and the guided lab.

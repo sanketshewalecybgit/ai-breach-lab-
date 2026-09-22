@@ -1,33 +1,39 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token }}">
   <title>{% block title %}Overview{% endblock %} · AI BreachLab</title>
   <meta name="author" content="GhostStag Security">
+  <meta name="theme-color" content="#080f1b">
   <meta name="description" content="AI BreachLab. Explore advanced AI attack surfaces, tool abuse, and defensive controls.">
   <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script defer src="{{ url_for('static', filename='js/lab.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/robot-hand.js') }}"></script>
 </head>
 <body>
+{% include '_robot_hand.html' %}
+<div class="site-shell">
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="safety-banner">INTENTIONALLY VULNERABLE TRAINING LAB – LOCAL USE ONLY</div>
 <header class="site-header">
-  <div class="container header-top"><a class="brand" href="{{ url_for('home') }}"><span class="brand-mark" aria-hidden="true">B<span>/</span></span><span>AI BreachLab<small>Hands-on AI security</small></span></a><div class="header-course"><span class="course-number" aria-hidden="true">AI</span><span>ADVANCED AI<br><strong>Attack Surfaces</strong></span></div></div>
+  <div class="container header-top"><a class="brand" href="{{ url_for('home') }}"><span class="brand-mark" aria-hidden="true">B<span>/</span></span><span>AI BreachLab<small>AI SECURITY // OPERATIONS LAB</small></span></a><div class="header-course"><span class="system-light" aria-hidden="true"></span><span>LOCAL ENVIRONMENT<br><strong>Simulation ready</strong></span></div></div>
   <nav class="container nav-row" aria-label="Main navigation">
-    {% for endpoint, label in [('home','Overview'),('chat','AI Assistant'),('orders','My Orders'),('tickets','Support Tickets'),('lab','Challenges'),('architecture','Architecture'),('compare','Defensive Version')] %}
-      <a class="{% if request.endpoint == endpoint %}active{% endif %}" href="{{ url_for(endpoint) }}">{{ label }}</a>
+    {% for endpoint, label in [('home','Overview'),('chat','AI Assistant'),('orders','My Orders'),('tickets','Support Tickets'),('lab','Challenges'),('breakfix.workspace','Break / Fix'),('expert.workspace','Expert'),('architecture','Architecture'),('compare','Defensive Version')] %}
+      {% set is_active = request.endpoint == endpoint or (endpoint == 'expert.workspace' and request.blueprint == 'expert') or (endpoint == 'lab' and request.endpoint in ['challenge', 'hints', 'solved']) %}
+      <a class="{% if is_active %}active{% endif %}" {% if is_active %}aria-current="page"{% endif %} href="{{ url_for(endpoint) }}"><span class="nav-index" aria-hidden="true">{{ '%02d'|format(loop.index) }}</span>{{ label }}</a>
     {% endfor %}
   </nav>
 </header>
 <div class="context-bar"><div class="container context-inner"><span>{% if identity %}Current simulated identity: <strong>User {{ identity.id }} – {{ identity.name }}</strong> <a href="{{ url_for('profile') }}">Profile</a> · <a href="{{ url_for('login') }}">Switch</a>{% else %}Fictional accounts. No passwords. <a href="{{ url_for('login') }}">Select demo identity →</a>{% endif %}</span>
-{% if identity %}<form action="{{ url_for('set_mode') }}" method="post" class="mode-toggle"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button name="mode" value="vulnerable" class="mode-button {% if mode == 'vulnerable' %}selected vulnerable{% endif %}" aria-pressed="{{ 'true' if mode == 'vulnerable' else 'false' }}">Vulnerable mode</button><button name="mode" value="secure" class="mode-button {% if mode == 'secure' %}selected secure{% endif %}" aria-pressed="{{ 'true' if mode == 'secure' else 'false' }}">Secure mode</button></form>{% else %}<span class="badge text-bg-danger">Vulnerable mode · default</span>{% endif %}</div></div>
+{% if identity %}<form action="{{ url_for('set_mode') }}" method="post" class="mode-toggle">{% if request.blueprint == 'expert' %}<input type="hidden" name="return_to" value="expert">{% endif %}<input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button name="mode" value="vulnerable" class="mode-button {% if mode == 'vulnerable' %}selected vulnerable{% endif %}" aria-pressed="{{ 'true' if mode == 'vulnerable' else 'false' }}">Vulnerable mode</button><button name="mode" value="secure" class="mode-button {% if mode == 'secure' %}selected secure{% endif %}" aria-pressed="{{ 'true' if mode == 'secure' else 'false' }}">Secure mode</button></form>{% else %}<span class="badge text-bg-danger">Vulnerable mode · default</span>{% endif %}</div></div>
 <main id="main" class="container main-content">
 {% for category, message in get_flashed_messages(with_categories=true) %}<div class="alert alert-{{ category }}" role="status">{{ message }}</div>{% endfor %}
 {% block content %}{% endblock %}
 </main>
 <footer class="container site-footer"><span><strong>AI BreachLab</strong> · Created by GhostStag Security<br>Advanced AI Attack Surfaces · All data and actions are fictional.</span><span><a href="{{ url_for('hints') }}">Hints</a><a href="{{ url_for('reset') }}">Reset lab</a></span></footer>
+</div>
 </body>
 </html>

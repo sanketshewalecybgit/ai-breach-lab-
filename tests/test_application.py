@@ -11,6 +11,8 @@ def test_pages_render_with_banner(alice, path):
     assert 'INTENTIONALLY VULNERABLE TRAINING LAB – LOCAL USE ONLY' in response.text
     assert 'AI BreachLab' in response.text
     assert 'Content-Security-Policy' in response.headers
+    title = response.text.split('<title>', 1)[1].split('</title>', 1)[0]
+    assert '<' not in title, 'Page content must not leak into the document title'
 
 
 def test_unauthenticated_chat_denied(client):

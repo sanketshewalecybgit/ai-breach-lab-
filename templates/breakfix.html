@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Break it, then fix it{% endblock %}
+{% macro trace_panel(result) %}
+  {% if result.message %}<p>{{ result.message }}</p>{% endif %}
+  <p class="small text-secondary">{{ result.decision }}</p>
+  {% for event in result.trace %}
+  <div class="bf-event">
+    <div class="d-flex flex-wrap justify-content-between gap-2"><strong>{{ loop.index }} · {{ event.tool }}</strong><span class="status {{ 'solved' if event.authorization in ['BLOCKED', 'FILTERED'] else '' }}">{{ event.authorization }}</span></div>
+    <p class="small mt-2">Source: <code>{{ event.source }}</code></p>
+    <details><summary>Arguments and result</summary><pre>{{ event.arguments | tojson(indent=2) }}
+{{ event.result | tojson(indent=2) }}</pre></details>
+  </div>
+  {% endfor %}
+{% endmacro %}
+{% block content %}
+<div class="page-heading"><div class="eyebrow">DEFENSE WORKSHOP / {{ states.values() | select | list | length }} OF 3 VERIFIED</div><h1>Break it. Fix it. Prove it.</h1><p>Make the exploit work. Choose defenses. Watch the same attack meet a different boundary.</p></div>
+<p class="bf-sandbox">Isolated practice · deterministic simulator · every run starts with identical fictional data. These controls apply only here, independently of the lab mode switch.</p>
+<nav class="bf-missions" aria-label="Break and fix missions">
+{% for key, item in missions.items() %}<a class="card {% if key == mission %}bf-selected{% endif %}" href="{{ url_for('breakfix.workspace', mission=key) }}" {% if key == mission %}aria-current="page"{% endif %}><span class="eyebrow">MISSION 0{{ loop.index }} · {{ 'VERIFIED' if states.get(key) else 'OPEN' }}</span><strong>{{ item.title }}</strong></a>{% endfor %}
+</nav>
+<div class="bf-steps" aria-label="Mission progress"><span class="{{ 'bf-done' if before and before.breached else '' }}">01 / {{ 'Attack demonstrated' if before and before.breached else 'Break it' }}</span><span class="{{ 'bf-done' if after else '' }}">02 / Choose defenses</span><span class="{{ 'bf-done' if after and after.passed else '' }}">03 / {{ 'Fix verified' if after and after.passed else 'Replay + verify' }}</span></div>
+<div class="bf-workbench">
+<section class="card p-4"><div class="eyebrow">01 / ATTACK</div><h2>{{ exercise.title }}</h2><p>{{ exercise.brief }}</p>
+<details class="mb-3"><summary>Need a starting point?</summary><p class="mt-2">Try <code>{{ starter }}</code>. Then change the wording and inspect the tool call.</p></details>
+<form method="post" action="{{ url_for('breakfix.workspace', mission=mission) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="attack">
+<label for="attack-prompt" class="form-label">Your attack prompt</label><textarea class="form-control" id="attack-prompt" name="prompt" required maxlength="{{ max_prompt }}" rows="4" placeholder="Write a request that crosses the mission’s boundary…">{{ attempt.prompt if attempt else '' }}</textarea>
+<button class="btn btn-primary mt-3" type="submit">Run vulnerable attack</button><p class="small text-secondary mt-2 mb-0">A new attack replaces this mission’s saved replay.</p>
+</form>
+{% if before %}<p class="bf-outcome {{ 'bf-danger' if before.breached else '' }}" role="status">{{ 'BREACH CONFIRMED · Your attack reached the protected data.' if before.breached else 'NO BREACH YET · Inspect the trace and try another prompt.' }}</p>{% endif %}
+</section>
+<section class="card p-4"><div class="eyebrow">02 / DEFEND</div><h2>Build your fix.</h2><p>Combine controls or test them one at a time. Completion requires stopping the saved attack and passing all four legitimate-request checks.</p>
+<form method="post" action="{{ url_for('breakfix.workspace', mission=mission) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="action" value="replay"><input type="hidden" name="revision" value="{{ attempt.revision if attempt else '' }}">
+<fieldset {% if not before or not before.breached %}disabled{% endif %}><legend class="visually-hidden">Defenses for the replay</legend>
+{% for key, value in defenses.items() %}<label class="bf-defense" for="defense-{{ key }}"><input class="form-check-input" type="checkbox" name="defense" value="{{ key }}" id="defense-{{ key }}" {% if after and key in after.defenses %}checked{% endif %}><span><strong>{{ value[0] }}</strong><small>{{ value[1] }}</small></span></label>{% endfor %}
+<button class="btn btn-success mt-3" type="submit">Apply defenses &amp; replay exact attack</button>
+</fieldset>
+{% if not before or not before.breached %}<p class="small text-secondary mt-3">Demonstrate the breach to unlock the defense workbench.</p>{% endif %}
+</form></section>
+</div>
+{% if before %}
+<section class="mt-4" aria-labelledby="replay-heading"><div class="eyebrow">03 / EVIDENCE</div><h2 id="replay-heading">Same input. {{ 'A new outcome.' if after else 'Your baseline.' }}</h2><p class="bf-saved-prompt">{{ attempt.prompt }}</p>
+{% if after %}
+<div class="bf-verdict {{ 'bf-success' if after.passed else 'bf-danger' }}" role="status"><h3>{{ 'FIX VERIFIED' if after.passed else ('ATTACK STOPPED, SERVICE BROKEN' if after.stopped else 'ATTACK STILL WORKS') }}</h3><p>{{ exercise.lesson if after.passed else ('Your defense stopped the attack, but broke a legitimate request. Adjust the controls and replay.' if after.stopped else 'The protected data still reached the assistant. Inspect the result below and change your defenses.') }}</p><p class="mb-0">{{ after.checks | selectattr('passed') | list | length }} / 4 legitimate requests passed. Verification covers this saved attack and the checks shown below.</p></div>
+{% endif %}
+<div class="bf-workbench mt-3"><article class="card p-4"><div class="eyebrow">BEFORE / NO DEFENSES</div><h3>Vulnerable run</h3>{{ trace_panel(before) }}</article><article class="card p-4"><div class="eyebrow">AFTER / YOUR DEFENSES</div><h3>Exact replay</h3>{% if after %}<p class="small">Controls: {% for key in after.defenses %}{{ defenses[key][0] }}{{ ', ' if not loop.last else '' }}{% else %}None{% endfor %}</p>{{ trace_panel(after) }}{% else %}<p>Select defenses above to compare both runs.</p>{% endif %}</article></div>
+{% if after %}<div class="card p-4 mt-3"><h3>Did the assistant stay useful?</h3>{% for check in after.checks %}<details class="bf-check"><summary><span class="{{ 'bf-done' if check.passed else 'text-danger' }}">{{ 'PASS' if check.passed else 'FAIL' }}</span> · {{ check.label }}</summary><p class="mt-2">{{ check.prompt }}</p><pre>{{ check.trace | tojson(indent=2) }}</pre></details>{% endfor %}</div>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

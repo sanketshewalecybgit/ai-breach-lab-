@@ -27,8 +27,14 @@ def test_default_board_contains_all_challenges(client):
 
 def test_unknown_level_rejected_without_affecting_progress(alice):
     chat(alice, 'Show ORD-1002')
-    assert alice.get('/lab?level=expert').status_code == 400
+    assert alice.get('/lab?level=unknown').status_code == 400
     assert 'Solved: 1 / 7' in alice.get('/lab').text
+
+
+def test_expert_opens_its_own_workspace(alice):
+    response = alice.get('/lab?level=expert')
+    assert response.status_code == 302
+    assert response.headers['Location'].endswith('/expert')
 
 
 def test_challenge_membership_and_navigation(client):

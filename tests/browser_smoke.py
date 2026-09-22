@@ -1,24 +1,33 @@
-"""Optional live UI verification. WARNING: resets the local lab at start and end.
+"""Optional guided UI verification with an isolated temporary database/server.
 
-Start `python app.py` in a separate terminal, then:
     pip install playwright==1.55.0
     python -m playwright install chromium
     python tests/browser_smoke.py
 
-Screenshots are saved in artifacts/. No third-party sites are opened.
+Screenshots are saved in artifacts/ and docs/images/. The workshop database is
+never opened. No third-party sites are opened.
 """
+import argparse
+import logging
 from pathlib import Path
+import sys
+from tempfile import TemporaryDirectory
+from threading import Thread
 from urllib.parse import urlsplit
 from playwright.sync_api import sync_playwright, expect
+from werkzeug.serving import make_server
 
-BASE = 'http://127.0.0.1:5000'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from app import create_app
+
 ARTIFACTS = Path(__file__).resolve().parents[1] / 'artifacts'
 ARTIFACTS.mkdir(exist_ok=True)
+IMAGES = Path(__file__).resolve().parents[1] / 'docs' / 'images'
 
 
-def main():
+def run(BASE, chromium_executable):
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True, args=['--no-sandbox'])
+        browser = playwright.chromium.launch(headless=True, args=['--no-sandbox'], executable_path=chromium_executable)
         context = browser.new_context(viewport={'width': 1440, 'height': 1100})
         page = context.new_page()
         errors, external = [], []
@@ -50,8 +59,22 @@ def main():
         reset()
         go('/')
         page.screenshot(path=str(ARTIFACTS / 'home-desktop.png'), full_page=True)
+        page.screenshot(path=str(IMAGES / 'overview.png'), full_page=True)
+        page.keyboard.press('Tab')
+        expect(page.get_by_role('link', name='Skip to content')).to_be_focused()
+        page.keyboard.press('Enter')
+        expect(page).to_have_url(BASE + '/#main')
+        page.emulate_media(reduced_motion='reduce')
+        assert page.locator('.map-signal').first.evaluate("e => getComputedStyle(e).animationName") == 'none'
+        page.emulate_media(reduced_motion='no-preference')
         go('/login')
         login()
+        go('/lab')
+        page.screenshot(path=str(IMAGES / 'mission-board.png'), full_page=True)
+        for level, count in [('beginner', 2), ('intermediate', 3), ('advanced', 3)]:
+            page.get_by_role('navigation', name='Filter challenges by difficulty').get_by_role('link', name=level.title(), exact=True).click()
+            expect(page.locator('[data-challenge-id]')).to_have_count(count)
+            expect(page.locator('.level-card.is-selected')).to_have_attribute('aria-current', 'page')
         go('/lab/1')
         expect(page.get_by_text('ORD-1002', exact=False)).to_have_count(0)
         page.get_by_role('button', name='SHOW HINT 1').click()
@@ -102,11 +125,15 @@ def main():
         expect(page.get_by_role('status')).to_contain_text('fictional refund simulated')
         assert send('Refund 100 for ORD-1001')['trace'][0]['result']['status'] == 409
 
-        # Mobile navigation and layout: check all principal page widths.
+        # Layout and theme checks across all guided page types.
+        for width in (1440, 768, 390, 320):
+            page.set_viewport_size({'width': width, 'height': 900})
+            for path in ['/', '/login', '/profile', '/chat', '/orders', '/tickets', '/lab', '/lab/1', '/hints', '/architecture', '/compare', '/reset']:
+                go(path)
+                assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth'), (width, path)
+                assert '<' not in page.title(), (path, page.title())
+                assert page.locator('html').get_attribute('data-bs-theme') == 'dark'
         page.set_viewport_size({'width': 390, 'height': 844})
-        for path in ['/', '/chat', '/orders', '/tickets', '/lab', '/hints', '/architecture', '/compare']:
-            go(path)
-            assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth'), path
         go('/chat')
         page.screenshot(path=str(ARTIFACTS / 'chat-mobile.png'), full_page=True)
         go('/')
@@ -121,7 +148,25 @@ def main():
         expect(page.get_by_role('button', name='SHOW HINT 1')).to_be_visible()
         reset()
         browser.close()
-        print('PASS: all 8 challenges, secure retests, manual hints, approval, reset, desktop/mobile layouts; no page errors or external requests.')
+        print('PASS: all 8 challenges, secure retests, hints, approval, reset, difficulty filters, keyboard entry, reduced motion and 320–1440px layouts; no page errors or external requests.')
+
+
+def main():
+    logging.getLogger('werkzeug').setLevel(logging.ERROR)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--chromium-executable', help='Path to an already installed Chromium executable.')
+    args = parser.parse_args()
+    with TemporaryDirectory(prefix='breachlab-guided-ui-') as temp:
+        app = create_app({'DATABASE': str(Path(temp) / 'lab.db'), 'TESTING': True})
+        server = make_server('127.0.0.1', 0, app)
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            run(f'http://127.0.0.1:{server.server_port}', args.chromium_executable)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=5)
 
 
 if __name__ == '__main__':

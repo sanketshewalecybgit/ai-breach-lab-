@@ -1,0 +1,62 @@
+{# Decorative local vector artwork. SVG transforms let the fingers articulate. #}
+<div class="robot-backdrop" aria-hidden="true" inert>
+  <svg class="robot-hand" viewBox="0 0 600 940" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+    <defs>
+      <linearGradient id="hand-metal" x1="180" y1="220" x2="450" y2="750" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#256078" stop-opacity=".7"/>
+        <stop offset=".5" stop-color="#102d42" stop-opacity=".35"/>
+        <stop offset="1" stop-color="#55b9c7" stop-opacity=".3"/>
+      </linearGradient>
+      <linearGradient id="finger-metal" x1="-22" y1="-170" x2="24" y2="0" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#75bdcf" stop-opacity=".35"/>
+        <stop offset=".5" stop-color="#113348" stop-opacity=".25"/>
+        <stop offset="1" stop-color="#3b8294" stop-opacity=".5"/>
+      </linearGradient>
+      <radialGradient id="hand-aura">
+        <stop stop-color="#43c9df" stop-opacity=".16"/>
+        <stop offset="1" stop-color="#43c9df" stop-opacity="0"/>
+      </radialGradient>
+      <g id="robot-digit" stroke-linejoin="round">
+        <path d="M-21-9L-24-47-15-60H15L24-47 21-9 12 0H-12Z M-18-74L-19-104-12-116H12L19-104 18-74 10-66H-10Z M-15-131L-16-155-10-172H10L16-155 15-131 8-124H-8Z" fill="url(#finger-metal)" stroke="#75d3e6" stroke-width="1.5"/>
+        <path d="M-11-15V-43L-6-49H6L11-43V-15 M-9-80V-102 M9-80V-102 M-7-137V-154L-3-161H3L7-154V-137" stroke="#92dbe8" stroke-opacity=".5"/>
+        <path d="M-13-33H13 M-10-93H10 M-8-144H8" stroke="#6ce8ee" stroke-width="3"/>
+        <circle cy="-63" r="9" fill="#102d41" stroke="#9bdded"/>
+        <circle cy="-63" r="3" fill="#6ce8ee"/>
+        <circle cy="-120" r="7" fill="#102d41" stroke="#9bdded"/>
+        <circle cy="-120" r="2" fill="#6ce8ee"/>
+        <path d="M-25-43V-17 M25-43V-17" stroke="#c0edee" stroke-opacity=".6" stroke-width="2"/>
+      </g>
+    </defs>
+    <ellipse cx="320" cy="430" rx="265" ry="400" fill="url(#hand-aura)"/>
+    <g class="robot-hand-motion" transform="translate(0 0) rotate(-18 320 540)">
+      <!-- Open, five-digit hand with separate mechanical finger joints. -->
+      <g transform="translate(236 351) rotate(-14)"><g class="robot-finger" data-flex="9"><use href="#robot-digit"/></g></g>
+      <g transform="translate(299 325) rotate(-3)"><g class="robot-finger" data-flex="3"><use href="#robot-digit" transform="scale(1.08 1.26)"/></g></g>
+      <g transform="translate(365 329) rotate(10)"><g class="robot-finger" data-flex="-5"><use href="#robot-digit" transform="scale(1 .99)"/></g></g>
+      <g transform="translate(421 361) rotate(24)"><g class="robot-finger" data-flex="-12"><use href="#robot-digit" transform="scale(.83 .78)"/></g></g>
+      <g transform="translate(208 464) rotate(-57)"><g class="robot-finger" data-flex="12"><use href="#robot-digit" transform="scale(1.04 .79)"/></g></g>
+      <!-- Palm armor, exposed tendons, and a luminous actuator. -->
+      <path d="M216 356L250 332 295 308 369 313 431 348 449 391 436 502 382 577 276 572 218 504 201 412Z" fill="url(#hand-metal)" stroke="#80cede" stroke-width="2"/>
+      <path d="M237 375L268 353 362 342 408 371 419 434 393 500 372 548 285 543 250 486 228 416Z" stroke="#75d3e6" stroke-opacity=".6"/>
+      <path d="M246 363L284 413 M301 341L312 398 M361 345L346 400 M411 374L372 421 M229 457L279 451" stroke="#83e7ed" stroke-width="5" stroke-opacity=".45"/>
+      <path d="M246 363L284 413 M301 341L312 398 M361 345L346 400 M411 374L372 421" stroke="#c5f2f5" stroke-width="1"/>
+      <path d="M318 388L367 415 367 470 318 499 270 471 270 416Z" fill="#0e3044" stroke="#97edee" stroke-width="2"/>
+      <circle cx="319" cy="444" r="35" stroke="#6ce8ee" stroke-width="2"/>
+      <circle cx="319" cy="444" r="26" stroke="#a7f4f6" stroke-dasharray="26 6 3 6"/>
+      <circle cx="319" cy="444" r="12" fill="#6ce8ee" fill-opacity=".2" stroke="#a7f4f6"/>
+      <path d="M319 405V417 M319 471V483 M280 444H292 M346 444H358 M287 507L300 533H349L365 505" stroke="#97e3ea"/>
+      <g fill="#153b50" stroke="#a7e3ed"><circle cx="239" cy="390" r="5"/><circle cx="402" cy="390" r="5"/><circle cx="279" cy="538" r="5"/><circle cx="380" cy="534" r="5"/></g>
+      <!-- Wrist bearing and forearm continue out of the viewport. -->
+      <path d="M280 575L284 613 M306 580V617 M338 580V617 M365 575L361 613" stroke="#a2dfea" stroke-width="7"/>
+      <path d="M265 608L377 603 395 636 386 669 267 675 250 647Z" fill="url(#hand-metal)" stroke="#80cede" stroke-width="2"/>
+      <path d="M270 630L373 625 M272 648L376 643" stroke="#6ce8ee" stroke-width="3"/>
+      <path d="M273 675L386 668 426 940H245Z" fill="url(#hand-metal)" stroke="#80cede" stroke-width="2"/>
+      <path d="M291 701L312 718 302 912 M365 696L344 718 360 912 M316 723H339 M314 742H342 M311 847H351 M309 866H354" stroke="#8ad4e4" stroke-opacity=".65" stroke-width="2"/>
+      <path d="M283 708L273 897 M376 704L405 897" stroke="#6ce8ee" stroke-width="3"/>
+      <g stroke="#6ce8ee" stroke-opacity=".35">
+        <path d="M180 290H130V520H171 M464 324H501V543H456 M129 405H87 M501 433H544"/>
+        <circle cx="87" cy="405" r="3"/><circle cx="544" cy="433" r="3"/>
+      </g>
+    </g>
+  </svg>
+</div>

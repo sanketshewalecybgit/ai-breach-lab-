@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% block title %}Expert integration{% endblock %}{% block content %}
+<a class="back-link" href="{{ url_for('expert.workspace', _anchor='case-file') }}">← Expert case file</a>
+<div class="page-heading"><div class="eyebrow">FICTIONAL INTEGRATION REGISTRY</div><h1>{{ case.integration.name }}</h1><p><code>{{ case.integration.id }}</code> · Revision {{ case.integration.revision }}</p></div>
+<div class="notice"><strong>Publisher-supplied description</strong><p class="mb-0">The assistant consults this entry when checking delivery. You may edit the description to investigate its effect. The available backend capabilities are fixed; this entry cannot install software or connect to a service.</p></div>
+<form method="post" class="card side-card mt-4"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="case_id" value="{{ case.id }}"><input type="hidden" name="revision" value="{{ case.integration.revision }}"><label for="integration-description" class="form-label">Integration description</label><textarea id="integration-description" name="description" rows="9" maxlength="4000" required class="form-control">{{ case.integration.description }}</textarea><button class="btn btn-outline-primary mt-3 align-self-start">Save description</button></form>
+{% include '_expert_grammar.html' %}
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}{% block title %}Expert reference{% endblock %}{% block content %}
+<a class="back-link" href="{{ url_for('expert.workspace', _anchor='case-file') }}">← Expert case file</a>
+<div class="page-heading"><div class="eyebrow">{{ case.company }} / REFERENCE DOCUMENT</div><h1>{{ document.title }}</h1><p><code>{{ document.id }}</code> · Revision {{ document.revision }}</p></div>
+<article class="card side-card"><pre class="response-text">{{ document.body }}</pre></article>
+<p class="small text-secondary mt-3">Reading this page does not invoke the assistant or award evidence.</p>
+<form action="{{ url_for('expert.chat') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="case_id" value="{{ case.id }}"><input type="hidden" name="message" value="Read document {{ document.id }}"><button class="btn btn-primary">Ask the assistant to read this document</button></form>
+{% if document.editable %}<section class="learning-section"><h2>Edit the fictional reference</h2><p>You may modify this publisher-supplied reference to investigate how its contents affect the assistant.</p><form method="post" class="card side-card"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="case_id" value="{{ case.id }}"><input type="hidden" name="revision" value="{{ document.revision }}"><label for="reference-body" class="form-label">Reference text</label><textarea id="reference-body" name="body" rows="9" maxlength="4000" required class="form-control">{{ document.body }}</textarea><button class="btn btn-outline-primary mt-3 align-self-start">Save reference</button></form>
+{% include '_expert_grammar.html' %}</section>{% endif %}
+{% endblock %}

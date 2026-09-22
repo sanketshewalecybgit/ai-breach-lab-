@@ -12,6 +12,9 @@ from database.seed import seed_database
 from ai.agent import SupportAgent
 from challenges.definitions import CHALLENGES, BY_ID, LEVELS
 from tools import execute
+from expert import cases as expert_cases
+from expert.routes import bp as expert_blueprint
+from challenges import breakfix
 
 
 def create_app(test_config=None):
@@ -27,6 +30,10 @@ def create_app(test_config=None):
         db = get_db()
         if not db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'").fetchone():
             seed_database(db)
+        expert_cases.initialize(db)
+        breakfix.initialize(db)
+    app.register_blueprint(expert_blueprint)
+    app.register_blueprint(breakfix.bp)
 
     @app.before_request
     def local_request_context():
@@ -173,6 +180,8 @@ def create_app(test_config=None):
     @app.get('/lab')
     def lab():
         selected_level = request.args.get('level', 'all')
+        if selected_level == 'expert':
+            return redirect(url_for('expert.workspace'))
         if selected_level != 'all' and selected_level not in LEVELS:
             abort(400, description='Choose Beginner, Intermediate, Advanced, or All levels.')
         visible_challenges = [c for c in CHALLENGES
@@ -220,6 +229,8 @@ def create_app(test_config=None):
         db.execute('UPDATE lab_settings SET mode=? WHERE id=1', (mode,))
         db.commit()
         flash(f'{mode.capitalize()} mode enabled. Retest requests in the assistant.', 'success')
+        if request.form.get('return_to') == 'expert':
+            return redirect(url_for('expert.workspace'))
         return redirect(url_for('chat'))
 
     @app.get('/solved')
@@ -234,6 +245,11 @@ def create_app(test_config=None):
             if request.form.get('confirm') != 'yes':
                 abort(400, description='Reset confirmation is required.')
             seed_database(get_db())
+            db = get_db()
+            db.execute('BEGIN IMMEDIATE')
+            expert_cases.reset(db)
+            db.execute('DELETE FROM breakfix_attempts')
+            db.commit()
             session.clear()
             flash('Lab reset. Fictional data and original tickets restored; vulnerable mode enabled.', 'success')
             return redirect(url_for('login'))
@@ -242,7 +258,9 @@ def create_app(test_config=None):
     @app.errorhandler(400)
     @app.errorhandler(403)
     @app.errorhandler(404)
+    @app.errorhandler(409)
     @app.errorhandler(413)
+    @app.errorhandler(422)
     def friendly_error(error):
         if request.path.startswith('/api/'):
             return jsonify(error=error.description), error.code

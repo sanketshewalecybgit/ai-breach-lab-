@@ -2,11 +2,11 @@
 
 **Advanced AI Attack Surfaces · Created by GhostStag Security**
 
-**Beginner → Intermediate → Advanced** · 8 challenges · Vulnerable & secure modes · No API keys
+**Beginner → Intermediate → Advanced → Expert** · 8 guided challenges + 5 Expert investigations + 3 Break / Fix missions · No API keys
 
 [Quick start](#requirements-and-installation) · [Difficulty levels](#difficulty-levels) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)
 
-AI BreachLab is an independent contribution to AI security education: an intentionally vulnerable, hands-on training environment. Its NovaCart Support scenario connects a fictional customer support assistant to customer data and business tools. A deterministic mock agent converts natural-language requests into fictional tool calls. Students inspect actual backend events, complete seven core challenges and one advanced challenge, then retest in secure mode.
+AI BreachLab is an independent contribution to AI security education: an intentionally vulnerable, hands-on training environment. Its NovaCart Support scenario connects a fictional customer support assistant to customer data and business tools. Deterministic mock agents convert supported tasks into fictional tool calls. Students inspect actual backend events, complete seven core challenges and one advanced challenge, then investigate five randomized Expert scenarios and retest in secure mode.
 
 > This project is an intentionally vulnerable educational application. Run it only on localhost or an isolated training environment. Do not expose it publicly.
 
@@ -43,7 +43,7 @@ Dependencies require a one-time package download. Bootstrap CSS is bundled local
 
 Select Alice (1001, `alice@novacart.lab`) or Bob (1002, `bob@novacart.lab`) at `/login`. No passwords are accepted or needed. Start as Alice. Admin Demo (9001) is fictional seed data, not a selectable login identity. Use only fictional information in messages and tickets.
 
-Each local instance is intended for **one student**. Database state, progress, hints and mode are shared across identity changes and browser sessions. Different students should run separate instances. The session signing key is randomly generated at startup; a server restart requires selecting an identity again while saved lab progress remains.
+Each local instance is intended for **one student**. Guided database state, progress, hints and mode are shared across identity changes and browser sessions. Expert gives Alice and Bob separate randomized cases and progress; the security mode remains shared. Different students should run separate instances. The session signing key is randomly generated at startup; a server restart requires selecting an identity again while saved lab progress remains.
 
 ## Difficulty levels
 
@@ -54,10 +54,38 @@ Choose a track on the homepage or filter the mission board at `/lab`. Each level
 | **Beginner** | 1–2 | Identity, ownership, and tools with excessive access |
 | **Intermediate** | 3–5 | Unauthorized actions, invalid amounts, and sensitive context |
 | **Advanced** | 6–8 | Indirect injection, multi-step tool chains, and untrusted tool output |
+| **Expert** | 5 independent objectives | Randomized case discovery, persistent effects, tenant isolation, and approval integrity |
 
-These are curated challenge difficulty tracks, not a switch that changes an attack's backend behavior. Every track is available immediately. All challenges retain three optional progressive hints and the same evidence-based success checks. Vulnerable/secure mode is a separate control for comparing attacks with defenses.
+Beginner, Intermediate, and Advanced are curated difficulty tracks, not a switch that changes an attack's backend behavior. **Expert** opens a separate workspace at `/expert` with new data, tools, persistent workflows, and independent grading. Every track is available immediately. All challenges retain three optional progressive hints. Vulnerable/secure mode is a separate control for comparing attacks with defenses.
 
 Track progress includes every challenge in that track, including optional challenge 8 in Advanced. Overall lab completion requires only the seven core challenges. An executed chain can solve multiple challenges across tracks; filtering never changes or clears saved progress.
+
+## Break it, then fix it
+
+Choose **Break / Fix** in the navigation or mission board to practice three missions:
+cross-account access, ticket-based prompt injection, and internal metadata exposure.
+Run an attack, select individual defenses, and replay the exact saved prompt. Compare
+the before/after tool traces and four legitimate-request checks. Disabling every tool
+stops an attack but fails the exercise because customers lose useful functionality.
+
+Each run uses a fresh, isolated fictional database and the existing deterministic
+parser and tools. Defense controls apply only to this workspace, independently of
+the global mode switch. Progress persists separately for Alice and Bob; a new attack
+replaces that mission’s result, and full lab reset clears all Break / Fix progress.
+Existing installations gain its storage automatically at startup. Verification
+covers the saved attack and the displayed checks, not arbitrary attacks or real LLMs.
+
+## Expert investigations
+
+Choose **Expert** in the navigation or on the mission board. Each case has randomized fictional company/customer IDs, orders, document IDs, amounts, and confidential content. Students start from a business brief and discover clues through case references and the assistant’s document catalogue. Vulnerability names and explanations unlock after actual evidence confirms an objective.
+
+The five deeper scenarios cover knowledge-base poisoning, persistent memory contamination across interactions, cross-tenant document retrieval, approval tampering/replay, and tool-description manipulation. Students can edit selected reference documents and a fictional integration description. Exports go only to local customer/review outboxes; refunds are database simulations.
+
+Expert provides source-linked traces, progressive hints, an explicit approval desk, persisted activity, and downloadable evidence. Its five-objective progress is independent of the seven-core solved screen. A confirmed fresh-case action randomizes only the current identity’s Expert workspace and retains the current security mode. See the [Expert student guide](docs/expert-guide.md) and [instructor key (spoilers)](docs/expert-instructor-key.md).
+
+The Expert agent is also deterministic, with documented task forms and a small editable-content directive grammar. It is not a real-model benchmark. It executes at most six tools per interaction. Secure mode independently blocks unauthorized effects while allowing legitimate summaries, delivery checks, and approved refunds, including when untrusted memory survives from vulnerable mode.
+
+Existing installations gain Expert storage automatically at startup without resetting guided data. Restart the server after updating the source.
 
 ## Challenges
 
@@ -96,7 +124,7 @@ The approval panel is a **local human-confirmation demonstration**, not a separa
 
 ## Reset
 
-Open `/reset`, check **Yes, reset all lab progress**, then press **Reset lab**. This restores users, orders, notes and original tickets; removes refunds, approvals and tool logs; clears progress/hints; restores vulnerable mode; and clears the current login. A GET request never resets data. Stop active requests before resetting a shared demonstration instance.
+Open `/reset`, check **Yes, reset all lab progress**, then press **Reset lab**. This restores users, orders, notes and original tickets; removes refunds, approvals and tool logs; clears progress/hints; replaces both Expert cases and their evidence; restores vulnerable mode; and clears the current login. A GET request never resets data. Stop active requests before resetting a shared demonstration instance.
 
 ## Docker (optional)
 
@@ -117,7 +145,13 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Tests use isolated temporary SQLite databases, not your workshop database. They prove vulnerable attacks work, secure defenses work, tools remain useful, actual events drive progress, approvals revalidate state, hints remain progressive, and reset restores the original lab. `tests/browser_smoke.py` is an optional browser smoke test; instructions are in that file. It resets the live lab, so run it on a fresh instance.
+Tests use isolated temporary SQLite databases, not your workshop database. They prove vulnerable attacks work, secure defenses work, tools remain useful, actual events drive progress, approvals revalidate state, hints remain progressive, and reset restores the original lab. `tests/browser_smoke.py` is an optional browser smoke test; instructions are in that file. It starts its own temporary database and localhost server, preserving workshop progress.
+
+`tests/browser_expert_smoke.py` verifies the five Expert scenarios and secure retests through a browser using its own temporary database and localhost server. It requires Playwright with Chromium and does not open or reset your workshop database.
+
+Both browser scripts accept `--chromium-executable /path/to/chromium` to use an existing browser. They check responsive layouts at 320, 390, 768, and 1440 pixels. The guided script also verifies keyboard entry, reduced-motion support, difficulty filters, and refreshes the screenshots in `docs/images/`. The sci-fi interface uses locally bundled CSS, system fonts, and an SVG trust-boundary illustration; it needs no external assets.
+
+A decorative SVG robotic hand lifts, rotates, and gently flexes its fingers as the page scrolls. It stays behind the content, uses subtler movement on phones, and remains still when reduced motion is enabled. `tests/browser_motion_smoke.py` verifies scroll reversal, live motion preferences, mobile layouts, keyboard access, and the no-JavaScript fallback with an isolated database. It accepts the same `--chromium-executable` option. [View the robotic-hand preview](docs/images/robot-hand.png).
 
 ## Architecture and source map
 
@@ -128,6 +162,7 @@ ai/                        Provider interface, deterministic mock and agent loop
 tools/                     Fixed fictional backend tools and dispatcher
 security/                  Vulnerable and secure policies
 challenges/                Challenge definitions and server-side evidence engine
+expert/                    Randomized cases, Expert tools/policy, agent, grading and routes
 database/                  Schema and seed data (local lab.db is ignored)
 templates/                 Jinja2 student portal
 static/                    Local Bootstrap CSS, custom CSS and vanilla JavaScript
@@ -145,8 +180,10 @@ No real credentials or service integrations exist. The only educational secret i
 ## Workshop materials
 
 - Student guide: [docs/student-guide.md](docs/student-guide.md)
-- Instructor answer key (spoilers): [docs/instructor-answer-key.md](docs/instructor-answer-key.md)
-- 30-minute delivery sequence: [docs/instructor-demo-flow.md](docs/instructor-demo-flow.md)
+- Instructor answer key (spoilers), including all guided challenges and Break / Fix solutions: [docs/instructor-answer-key.md](docs/instructor-answer-key.md)
+- 30-minute guided delivery sequence and 20-minute Break / Fix extension: [docs/instructor-demo-flow.md](docs/instructor-demo-flow.md)
+- Expert student guide: [docs/expert-guide.md](docs/expert-guide.md)
+- Expert instructor key and 60–90 minute session: [docs/expert-instructor-key.md](docs/expert-instructor-key.md)
 
 ## Troubleshooting
 

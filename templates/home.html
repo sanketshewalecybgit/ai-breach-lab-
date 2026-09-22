@@ -3,9 +3,9 @@
 {% block content %}
 <section class="hero-panel" aria-labelledby="hero-title">
   <div class="hero-copy">
-    <div class="eyebrow"><span class="edition-tag">HANDS-ON</span> PRACTICAL AI SECURITY</div>
+    <div class="eyebrow"><span class="edition-tag">HANDS-ON</span> ENTER THE ATTACK SURFACE</div>
     <h1 id="hero-title">AI BreachLab<span class="blue-dot">.</span></h1>
-    <p class="hero-subtitle">Advanced AI Attack Surfaces</p>
+    <p class="hero-subtitle">Find the breach.<br><span>Build the defense.</span></p>
     <p class="hero-description">Follow the request. Find the boundary.<br>Discover what happens when an AI assistant has more access than it should.</p>
     <div class="d-flex flex-wrap gap-3 mt-4">
       <a class="btn btn-primary btn-lg" href="{{ url_for('lab') if identity else url_for('login') }}">{{ 'Continue your investigation' if identity else 'Launch the lab' }} <span aria-hidden="true">↗</span></a>
@@ -15,7 +15,21 @@
   </div>
   <aside class="mission-card" aria-label="Lab scenario">
     <div class="mission-topline"><span>SCENARIO / 01</span><span class="simulation-label">LOCAL SIMULATION</span></div>
-    <div class="scenario-symbol" aria-hidden="true">N<span>↗</span></div>
+    <div class="surface-map" aria-hidden="true">
+      <svg viewBox="0 0 400 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="map-grid" d="M0 45H400M0 95H400M0 145H400M50 0V190M100 0V190M150 0V190M200 0V190M250 0V190M300 0V190M350 0V190"/>
+        <circle class="map-orbit" cx="200" cy="95" r="82"/><circle class="map-orbit inner" cx="200" cy="95" r="61"/>
+        <path class="map-route" d="M57 95H163M237 95H343M200 58V21M200 132V169"/>
+        <path class="map-bracket" d="M151 69V46H174M226 46H249V69M249 121V144H226M174 144H151V121"/>
+        <path class="map-core" d="M200 54L236 75V115L200 136L164 115V75Z"/>
+        <text class="map-core-label" x="200" y="101" text-anchor="middle">AI</text>
+        <rect class="map-node" x="29" y="79" width="56" height="32" rx="3"/><text class="map-label" x="57" y="99" text-anchor="middle">INPUT</text>
+        <rect class="map-node target" x="315" y="79" width="56" height="32" rx="3"/><text class="map-label" x="343" y="99" text-anchor="middle">TOOLS</text>
+        <circle class="map-point" cx="200" cy="13" r="4"/><circle class="map-point" cx="200" cy="177" r="4"/>
+        <circle class="map-signal" cx="121" cy="95" r="3"/><circle class="map-signal" cx="280" cy="95" r="3"/>
+        <text class="map-caption" x="8" y="177">TRUST BOUNDARY</text><text class="map-caption" x="392" y="177" text-anchor="end">TRACE / INSPECT</text>
+      </svg>
+    </div>
     <h2>Inside NovaCart.</h2>
     <p>A customer support assistant.<br>Customer data. Business tools.<br>Trust boundaries waiting to be tested.</p>
     <ol class="attack-path" aria-label="Request path"><li>Prompt</li><li>Agent</li><li>Tool</li><li>Action</li></ol>
@@ -23,18 +37,19 @@
   </aside>
 </section>
 <section class="lab-metrics" aria-label="Training at a glance">
-  <div><strong>07<span> + 01</span></strong><span>Core challenges + advanced mission</span></div>
-  <div><strong>03</strong><span>Difficulty levels, from beginner to advanced</span></div>
+  <div><strong>08<span> + 05</span></strong><span>Guided challenges + Expert investigations</span></div>
+  <div><strong>04</strong><span>Learning paths, from beginner to Expert</span></div>
   <div><strong>{{ '%02d'|format(solved_count) }}<span> / 07</span></strong><span>Core challenges completed</span></div>
   <a href="{{ url_for('lab') }}">View your<br>challenge dashboard <span aria-hidden="true">↗</span></a>
 </section>
 <section class="learning-section" aria-labelledby="levels-title">
-  <div class="section-heading"><div><div class="eyebrow">CHOOSE YOUR DIFFICULTY</div><h2 id="levels-title">Start curious. Build confidence.</h2></div><p>Three tracks. Eight investigations.<br>Evidence at every step.</p></div>
+  <div class="section-heading"><div><div class="eyebrow">01 / SELECT YOUR MISSION</div><h2 id="levels-title">Choose your difficulty.</h2></div><p>Three guided tracks and an Expert workspace.<br>Thirteen investigations, backed by evidence.</p></div>
   {% include '_levels.html' %}
+  {% include '_expert_entry.html' %}
 </section>
 <section class="learning-section" aria-labelledby="learning-title">
-  <div class="section-heading"><div><div class="eyebrow">THE INVESTIGATION WORKFLOW</div><h2 id="learning-title">Go beyond the prompt.</h2></div><p>Trace the action. Understand the failure.<br>Verify the control that prevents it.</p></div>
+  <div class="section-heading"><div><div class="eyebrow">02 / INVESTIGATION PROTOCOL</div><h2 id="learning-title">Go beyond the prompt.</h2></div><p>Trace the action. Understand the failure.<br>Verify the control that prevents it.</p></div>
   <div class="row g-4">{% for number, title, text in [('01','Investigate the surface','Explore the support assistant, customer data, and the tools it can call. Find where access exceeds authority.'),('02','Follow the evidence','Inspect tool arguments, policy decisions, and backend results. Every completed challenge is backed by executed actions.'),('03','Validate the defense','Switch to secure mode and replay your requests. See how authorization and approval controls change the outcome.')] %}<div class="col-md-4"><article class="feature"><span class="step-number">{{ number }} <span aria-hidden="true">/</span></span><h3>{{ title }}</h3><p>{{ text }}</p></article></div>{% endfor %}</div>
 </section>
-<div class="notice mt-4"><strong>Your training environment</strong><p class="mb-0">NovaCart is a fictional customer support scenario powered by a local mock agent. Use fictional data only. Refunds never move money and tickets never send email. One instance is intended for one student; switching identities shares the same progress.</p></div>
+<div class="notice mt-4"><strong>Your training environment</strong><p class="mb-0">NovaCart is a fictional customer support scenario powered by local mock agents. Use fictional data only. Refunds never move money and outboxes never transmit data. One instance is intended for one student. Guided progress and security mode are shared; each identity has a separate Expert case.</p></div>
 {% endblock %}

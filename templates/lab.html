@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Challenge dashboard{% endblock %}
 {% block content %}
-<div class="page-heading"><div class="eyebrow">AI BREACHLAB / LEARNING PATHS</div><h1>Your mission board.</h1><p>Build your skills across three difficulty levels, from access boundaries to multi-step attacks. Start with Beginner or explore any track at your own pace.</p></div>
+<div class="page-heading"><div class="eyebrow">AI BREACHLAB / LEARNING PATHS</div><h1>Your mission board.</h1><p>Build your skills across three guided difficulty levels, then investigate randomized cases in Expert. Start with Beginner or explore any path at your own pace.</p></div>
 {% include '_levels.html' %}
+{% include '_expert_entry.html' %}
+<a class="expert-entry mt-4" href="{{ url_for('breakfix.workspace') }}"><div><span class="eyebrow">ATTACK → FIX → REPLAY</span><h3>Break it. Then prove you fixed it.</h3><p>Exploit an AI assistant, wire in defenses, and replay your exact attack. Keep legitimate requests working to complete the mission.</p></div><span class="expert-entry-link">Enter Break / Fix →</span></a>
 <div class="progress-panel mt-4"><div class="d-flex justify-content-between"><strong>Solved: {{ solved_count }} / 7</strong><span>{{ ((solved_count / 7) * 100)|int }}% complete</span></div><progress value="{{ solved_count }}" max="7" aria-label="Mandatory challenge completion">{{ solved_count }} / 7</progress><p class="mb-0 mt-2">Overall completion counts the seven core challenges. The optional advanced challenge is a bonus.</p>{% if solved_count == 7 %}<a class="btn btn-success mt-3" href="{{ url_for('solved') }}">LAB SOLVED — View your results →</a>{% endif %}</div>
 <nav class="difficulty-filters" aria-label="Filter challenges by difficulty">
   <a href="{{ url_for('lab') }}" {% if selected_level == 'all' %}aria-current="page"{% endif %}>All levels</a>
