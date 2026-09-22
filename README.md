@@ -10,7 +10,7 @@ AI BreachLab is an independent contribution to AI security education: an intenti
 
 > This project is an intentionally vulnerable educational application. Run it only on localhost or an isolated training environment. Do not expose it publicly.
 
-![AI BreachLab mission dashboard with three difficulty tracks](docs/images/mission-board.png)
+![AI BreachLab glass mission dashboard with guided tracks, Expert and Break / Fix](docs/images/mission-board.png)
 
 ## Learning objectives
 
@@ -149,7 +149,7 @@ Tests use isolated temporary SQLite databases, not your workshop database. They 
 
 `tests/browser_expert_smoke.py` verifies the five Expert scenarios and secure retests through a browser using its own temporary database and localhost server. It requires Playwright with Chromium and does not open or reset your workshop database.
 
-Both browser scripts accept `--chromium-executable /path/to/chromium` to use an existing browser. They check responsive layouts at 320, 390, 768, and 1440 pixels. The guided script also verifies keyboard entry, reduced-motion support, difficulty filters, and refreshes the screenshots in `docs/images/`. The sci-fi interface uses locally bundled CSS, system fonts, and an SVG trust-boundary illustration; it needs no external assets.
+Both browser scripts accept `--chromium-executable /path/to/chromium` to use an existing browser. They check responsive layouts at 320, 390, 768, and 1440 pixels. The guided script also verifies keyboard entry, reduced-motion support, difficulty filters, and refreshes the screenshots in `docs/images/`. The glass interface uses frosted navigation tabs, brighter text, cyan/violet accents, and dark reading surfaces. A visual attack–fix–replay path leads into the defense workshop. Local CSS, system fonts, and an SVG trust-boundary illustration keep the interface offline; blur is optional and decorative orbital movement respects reduced-motion preferences.
 
 A decorative SVG robotic hand lifts, rotates, and gently flexes its fingers as the page scrolls. It stays behind the content, uses subtler movement on phones, and remains still when reduced motion is enabled. `tests/browser_motion_smoke.py` verifies scroll reversal, live motion preferences, mobile layouts, keyboard access, and the no-JavaScript fallback with an isolated database. It accepts the same `--chromium-executable` option. [View the robotic-hand preview](docs/images/robot-hand.png).
 

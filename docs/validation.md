@@ -1,5 +1,31 @@
 # Validation record
 
+## Glass interface — 2026-09-22
+
+- Added frosted navigation tabs, reflective panel edges, rounded surfaces, brighter
+  body/secondary text, clearer active states, and larger form/chat text. Cyan/violet
+  accents, orbital decoration, a slowly rotating trust-boundary ring, and a visual
+  Break / Fix path extend the existing operations-console concept.
+- Preserved scroll-reactive hand/finger motion. Decorative layers remain inert;
+  new motion runs only when reduced motion is not requested. Dark fallback surfaces
+  remain readable without backdrop blur; stronger-contrast preferences receive
+  brighter text and simpler surfaces.
+- Final full suite: **142 passed in 29.11s**. The first run had one session-token
+  `KeyError` in an existing Expert approval test (141 passed). Its four-case focused
+  rerun and then the full suite passed without backend or test changes.
+- Guided, Expert, Break / Fix, and robotic-hand browser suites all passed at
+  **320, 390, 768, and 1440px**, including workflows, keyboard entry, no-JS checks,
+  scroll reversal, and live reduced-motion changes. No page errors or external
+  application requests were reported.
+- Foreground palette checks against a representative light panel tone (`#263650`)
+  ranged from **6.42:1 to 11.11:1** for body, secondary, navigation, accent, violet,
+  and placeholder text. This is a palette check, not a full accessibility audit.
+- Visually reviewed desktop overview, mission board, and mobile overview. Refreshed
+  `docs/images/overview.png`, `mission-board.png`, and `robot-hand.png`, plus guided,
+  Expert, Break / Fix, and motion screenshots in `artifacts/`.
+- Restarted the normal lab and verified the updated homepage over localhost.
+  Browser verification used temporary databases; saved workshop data was preserved.
+
 ## Break / Fix workshop — 2026-09-22
 
 - Added three missions with a vulnerable baseline, individual defense controls,

@@ -37,10 +37,18 @@
   </aside>
 </section>
 <section class="lab-metrics" aria-label="Training at a glance">
-  <div><strong>08<span> + 05</span></strong><span>Guided challenges + Expert investigations</span></div>
+  <div><strong>08<span> + 05 + 03</span></strong><span>Guided + Expert + Break / Fix</span></div>
   <div><strong>04</strong><span>Learning paths, from beginner to Expert</span></div>
   <div><strong>{{ '%02d'|format(solved_count) }}<span> / 07</span></strong><span>Core challenges completed</span></div>
   <a href="{{ url_for('lab') }}">View your<br>challenge dashboard <span aria-hidden="true">↗</span></a>
+</section>
+<section class="defense-loop learning-section" aria-labelledby="defense-loop-title">
+  <div class="defense-loop-copy"><div class="eyebrow">THE DEFENSE WORKSHOP</div><h2 id="defense-loop-title">Turn a breach into a breakthrough.</h2><p>Same attack. Your defenses. A visible difference.<br>Build a fix that protects the data and keeps the assistant useful.</p><a class="btn btn-outline-primary" href="{{ url_for('breakfix.workspace') }}">Enter Break / Fix <span aria-hidden="true">↗</span></a></div>
+  <ol class="defense-loop-path" aria-label="Break and fix workflow">
+    <li><span class="loop-node" aria-hidden="true">01</span><strong>Break</strong><small>Expose the weakness</small></li>
+    <li><span class="loop-node" aria-hidden="true">02</span><strong>Fix</strong><small>Choose your controls</small></li>
+    <li><span class="loop-node" aria-hidden="true">03</span><strong>Replay</strong><small>Prove the difference</small></li>
+  </ol>
 </section>
 <section class="learning-section" aria-labelledby="levels-title">
   <div class="section-heading"><div><div class="eyebrow">01 / SELECT YOUR MISSION</div><h2 id="levels-title">Choose your difficulty.</h2></div><p>Three guided tracks and an Expert workspace.<br>Thirteen investigations, backed by evidence.</p></div>
