@@ -71,10 +71,15 @@ def run(BASE, chromium_executable):
         login()
         go('/lab')
         page.screenshot(path=str(IMAGES / 'mission-board.png'), full_page=True)
-        for level, count in [('beginner', 2), ('intermediate', 3), ('advanced', 3)]:
+        for level, count in [('beginner', 2), ('intermediate', 3), ('advanced', 4)]:
             page.get_by_role('navigation', name='Filter challenges by difficulty').get_by_role('link', name=level.title(), exact=True).click()
             expect(page.locator('[data-challenge-id]')).to_have_count(count)
             expect(page.locator('.level-card.is-selected')).to_have_attribute('aria-current', 'page')
+        go('/lab/9')
+        expect(page.get_by_text('Latest release · 2026-09-25', exact=True)).to_be_visible()
+        page.get_by_role('link', name='Start with the returns policy').click()
+        expect(page.get_by_label('Message the assistant')).to_have_value('Fetch https://help.novacart.lab/returns')
+        assert send('Fetch https://help.novacart.lab/returns')['trace'][0]['result']['classification'] == 'public'
         go('/lab/1')
         expect(page.get_by_text('ORD-1002', exact=False)).to_have_count(0)
         page.get_by_role('button', name='SHOW HINT 1').click()
@@ -91,10 +96,14 @@ def run(BASE, chromium_executable):
             ('Summarize ticket 2.', 6),
             ('Summarize ticket 3.', 7),
             ('Look up shipping status of ORD-1003.', 8),
+            ('Fetch https://help.novacart.lab/legacy-returns', 9),
         ]:
             data = send(message)
             assert challenge in [c['id'] for c in data['newly_solved']], (message, data)
-        page.get_by_text('AI Debug / Tool Trace', exact=True).last.click()
+        page.locator('.trace > summary').last.click()
+        expect(page.locator('.trace').last).to_have_attribute('open', '')
+        expect(page.locator('.url-hops li')).to_have_count(2)
+        expect(page.locator('.url-hops li').last).to_contain_text('RETRIEVED')
         page.screenshot(path=str(ARTIFACTS / 'chat-evidence.png'), full_page=True)
         go('/lab')
         expect(page.get_by_text('Solved: 7 / 7', exact=True)).to_be_visible()
@@ -104,6 +113,13 @@ def run(BASE, chromium_executable):
         page.screenshot(path=str(ARTIFACTS / 'lab-solved.png'), full_page=True)
 
         page.get_by_role('button', name='Secure mode', exact=True).click()
+        for url in ['https://help.novacart.lab/legacy-returns', 'http://ops.novacart.lab/diagnostics']:
+            result = send('Fetch ' + url)['trace'][0]
+            assert result['authorization'] == 'DENIED'
+            assert result['result']['hops'][-1]['outcome'] == 'BLOCKED'
+            assert 'body' not in result['result']
+        for path in ['/returns', '/delivery']:
+            assert send('Fetch https://help.novacart.lab' + path)['trace'][0]['result']['classification'] == 'public'
         data = send('Show ORD-1002')
         assert data['trace'][0]['authorization'] == 'DENIED'
         assert send('Find bob@novacart.lab')['trace'] == []
@@ -128,13 +144,21 @@ def run(BASE, chromium_executable):
         # Layout and theme checks across all guided page types.
         for width in (1440, 768, 390, 320):
             page.set_viewport_size({'width': width, 'height': 900})
-            for path in ['/', '/login', '/profile', '/chat', '/orders', '/tickets', '/lab', '/lab/1', '/hints', '/architecture', '/compare', '/reset']:
+            for path in ['/', '/login', '/profile', '/chat', '/orders', '/tickets', '/lab', '/lab/1', '/lab/9', '/hints', '/architecture', '/compare', '/reset']:
                 go(path)
                 assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth'), (width, path)
                 assert '<' not in page.title(), (path, page.title())
                 assert page.locator('html').get_attribute('data-bs-theme') == 'dark'
         page.set_viewport_size({'width': 390, 'height': 844})
         go('/chat')
+        send('Fetch https://help.novacart.lab/legacy-returns')
+        page.locator('.trace > summary').last.click()
+        expect(page.locator('.trace').last).to_have_attribute('open', '')
+        expect(page.locator('.url-hops li').last).to_contain_text('BLOCKED')
+        page.locator('.url-hops').scroll_into_view_if_needed()
+        expect(page.get_by_role('heading', name='URL destination trace', exact=True)).to_be_visible()
+        assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth')
+        page.screenshot(path=str(ARTIFACTS / 'url-fetcher-mobile.png'), full_page=True)
         page.screenshot(path=str(ARTIFACTS / 'chat-mobile.png'), full_page=True)
         go('/')
         page.screenshot(path=str(ARTIFACTS / 'home-mobile.png'), full_page=True)
@@ -148,7 +172,7 @@ def run(BASE, chromium_executable):
         expect(page.get_by_role('button', name='SHOW HINT 1')).to_be_visible()
         reset()
         browser.close()
-        print('PASS: all 8 challenges, secure retests, hints, approval, reset, difficulty filters, keyboard entry, reduced motion and 320–1440px layouts; no page errors or external requests.')
+        print('PASS: all 9 challenges including URL fetcher and redirect enforcement, secure retests, hints, approval, reset, difficulty filters, keyboard entry, reduced motion and 320–1440px layouts; no page errors or external requests.')
 
 
 def main():

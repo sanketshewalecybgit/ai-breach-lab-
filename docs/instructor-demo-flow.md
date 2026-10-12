@@ -1,4 +1,4 @@
-# Instructor demo flow — 30 minutes
+# Instructor demo flow — core session and extensions
 
 Prepare one local instance per student. Install dependencies before class; the running lab is offline. Start the server, select Alice, and reset the demo instance before delivery. Keep the answer key separate from the student UI.
 
@@ -17,6 +17,28 @@ If demonstrating a legitimate secure refund after the attack sequence, reset fir
 Challenge 7's forwarded ticket can also solve challenges 2, 5 and 6. To preserve the lesson order, demonstrate it last. Optional challenge 8 can solve challenge 2 because the unrelated global lookup is itself an excessive-agency event.
 
 The simulator deliberately recognizes a small injection grammar; it is not a general LLM jailbreak benchmark. Distinguish model manipulation (following retrieved text) from application impact (weak backend policy permits the powerful call). Secure mode both changes handling of untrusted text and enforces independent policy, so the lesson is not merely “ask the model to behave.”
+
+## Optional URL-fetcher extension — 10 minutes
+
+Use [challenge 9's full solution](instructor-answer-key.md#9-assistant-url-fetcher--latest-release-2026-09-25).
+In vulnerable mode, fetch `https://help.novacart.lab/returns`, then
+`https://help.novacart.lab/legacy-returns`. Follow the redirect and retrieved
+internal content in the destination trace. Open `/lab/9` and expand its unlocked
+debrief. In secure mode, replay the older link and inspect the blocked internal
+hop; fetch `https://help.novacart.lab/delivery` to demonstrate an allowed public
+redirect. All destinations are offline fixtures.
+
+## Using the learning material
+
+Before an exercise, allow students to expand **Learn before you break** or jump
+straight in. After completion, ask them to interpret the saved evidence before
+opening the debrief. Its secure retest should include one blocked attack and one
+successful legitimate request. Budget 2–3 extra minutes per exercise when using
+both readings; the 30-minute core demonstration above assumes short discussions.
+
+The [complete answer key](instructor-answer-key.md) provides exact prompts,
+expected evidence and secure retests for all nine guided challenges and all three
+Break / Fix missions, plus the entry point to all five Expert solutions.
 
 ## Break / Fix extension — 20 minutes
 

@@ -12,7 +12,7 @@ Run only on localhost. Use only the supplied fictional accounts and lab data. Do
 2. Select Alice on the demo identity page. No password is needed.
 3. Read your profile and orders to understand your authenticated identity.
 4. Open the challenge dashboard and select a challenge.
-5. Read the story and objective, then open the assistant.
+5. Read the story and objective. Optionally expand **Learn before you break** for concepts, vocabulary, a simple flow diagram and observation prompts, or choose **Jump straight into the exercise**.
 
 The header always shows your current identity and mode. Each student should use a separate local instance. Switching between Alice and Bob does not reset the shared lab progress.
 
@@ -45,7 +45,7 @@ Each challenge has three manually revealed hints. Start with the objective and a
 
 ## Progress and retesting
 
-The server awards completion from actual tool results, not from a claim that an attack worked. A successful interaction may satisfy more than one challenge. Review the success evidence, root cause and remediation on the challenge page. The dashboard counts seven mandatory challenges; the eighth is optional.
+The server awards completion from actual tool results, not from a claim that an attack worked. A successful interaction may satisfy more than one challenge. Follow **Read your after-action debrief** back to the challenge page and expand the unlocked card. Review the saved evidence, vulnerable design, trace explanation, secure behavior and practical takeaway. Run the suggested secure retest yourself; the card does not record a retest pass. The dashboard counts seven mandatory challenges; challenges 8 and 9 are optional.
 
 Once all mandatory challenges are complete, open the **LAB SOLVED** screen. Then select **View defensive version** and switch to secure mode. Retest requests and compare traces. An eligible secure refund requires a separate human confirmation before the simulated action runs. No real money is ever moved.
 
@@ -59,11 +59,11 @@ Discuss at the end: which parts of the system proposed actions, and which parts 
 
 ## Choose a difficulty track
 
-Start with **Beginner** (challenges 1–2) to compare identity, ownership, and tool scope. Move to **Intermediate** (3–5) to inspect actions, business rules, and context exposure. **Advanced** (6–8) follows injected instructions through retrieved content and tool chains; challenge 8 is optional.
+Start with **Beginner** (challenges 1–2) to compare identity, ownership, and tool scope. Move to **Intermediate** (3–5) to inspect actions, business rules, and context exposure. **Advanced** (6–9) follows injected instructions through retrieved content and tool chains; challenges 8 and 9 are optional.
 
 Use the three track cards or the difficulty filters on the mission board. Each challenge displays its level and an investigation approach. All levels are available from the start, and all retain three progressive hints. Difficulty groups the investigations by complexity; vulnerable/secure mode independently controls the backend defenses.
 
-Your level progress is saved automatically from executed evidence. An attack chain may complete challenges in more than one level. Seven core challenges complete the lab; the optional advanced challenge counts toward its track but is not required for the solved screen.
+Your level progress is saved automatically from executed evidence. An attack chain may complete challenges in more than one level. Seven core challenges complete the lab; the optional advanced challenges count toward their track but is not required for the solved screen.
 
 ## Expert investigations
 
@@ -72,3 +72,29 @@ Choose **Expert** in the navigation for five independent investigations with ran
 Expert has editable reference material, a delivery integration description, persistent memory, a human approval desk, local outboxes, and downloadable evidence. Its progress is separate from the seven-core solved screen. See the [Expert guide](expert-guide.md) for the workflow and retesting instructions.
 
 Alice and Bob have separate Expert cases. The security mode remains shared. Generating a fresh Expert case clears only that identity’s Expert work and retains the mode; the footer’s full lab reset clears both Expert cases and the guided lab.
+
+## Latest release: Assistant URL Fetcher
+
+Open **Latest release** on the mission board for optional Advanced challenge 9.
+Start with `Fetch https://help.novacart.lab/returns` in the guided assistant.
+Read the returned page, follow its links in separate messages, and expand
+**AI Debug / Tool Trace → URL destination trace**. Compare your requested URL
+with the destination that actually supplied the content.
+
+Repeat your successful attack in secure mode, then confirm that the returns policy
+and `https://help.novacart.lab/delivery` still work. A secure denial does not clear
+previously saved attack evidence. Three progressive hints are available on `/lab/9`.
+These addresses are virtual catalogue entries, so enter them in the assistant.
+The exercise does not contact websites or other machines.
+
+## Optional learning and debriefs in every workspace
+
+All nine guided challenges, five Expert objectives and three Break / Fix missions
+include learning cards. Reading them does not use hints or affect progress. The
+cards and diagrams work offline and use native expand/collapse controls.
+
+Debriefs remain locked until the server confirms completion. Expert unlocks each
+objective separately in your current case. In Break / Fix, demonstrate the attack,
+choose defenses, and replay: the debrief opens only after **FIX VERIFIED**, including
+four passing legitimate-request checks. A new attack or failed replay relocks it.
+Full reset relocks all debriefs; a fresh Expert case relocks only that case.

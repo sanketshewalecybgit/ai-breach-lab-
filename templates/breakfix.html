@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from '_learning.html' import learning_card, debrief %}
 {% block title %}Break it, then fix it{% endblock %}
 {% macro trace_panel(result) %}
   {% if result.message %}<p>{{ result.message }}</p>{% endif %}
@@ -19,6 +20,7 @@
 {% for key, item in missions.items() %}<a class="card {% if key == mission %}bf-selected{% endif %}" href="{{ url_for('breakfix.workspace', mission=key) }}" {% if key == mission %}aria-current="page"{% endif %}><span class="eyebrow">MISSION 0{{ loop.index }} · {{ 'VERIFIED' if states.get(key) else 'OPEN' }}</span><strong>{{ item.title }}</strong></a>{% endfor %}
 </nav>
 <div class="bf-steps" aria-label="Mission progress"><span class="{{ 'bf-done' if before and before.breached else '' }}">01 / {{ 'Attack demonstrated' if before and before.breached else 'Break it' }}</span><span class="{{ 'bf-done' if after else '' }}">02 / Choose defenses</span><span class="{{ 'bf-done' if after and after.passed else '' }}">03 / {{ 'Fix verified' if after and after.passed else 'Replay + verify' }}</span></div>
+{{ learning_card(lesson, 'breakfix-' ~ mission, '#attack-prompt') }}
 <div class="bf-workbench">
 <section class="card p-4"><div class="eyebrow">01 / ATTACK</div><h2>{{ exercise.title }}</h2><p>{{ exercise.brief }}</p>
 <details class="mb-3"><summary>Need a starting point?</summary><p class="mt-2">Try <code>{{ starter }}</code>. Then change the wording and inspect the tool call.</p></details>
@@ -48,4 +50,6 @@
 {% if after %}<div class="card p-4 mt-3"><h3>Did the assistant stay useful?</h3>{% for check in after.checks %}<details class="bf-check"><summary><span class="{{ 'bf-done' if check.passed else 'text-danger' }}">{{ 'PASS' if check.passed else 'FAIL' }}</span> · {{ check.label }}</summary><p class="mt-2">{{ check.prompt }}</p><pre>{{ check.trace | tojson(indent=2) }}</pre></details>{% endfor %}</div>{% endif %}
 </section>
 {% endif %}
+{{ debrief(lesson, 'breakfix-' ~ mission, debrief_evidence,
+    'Verify a fix that stops the saved attack and passes all four legitimate-request checks to unlock this mission’s debrief.') }}
 {% endblock %}

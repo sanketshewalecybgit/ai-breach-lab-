@@ -4,7 +4,7 @@ from database import get_db
 from tools import execute
 
 
-@pytest.mark.parametrize('path', ['/', '/login', '/chat', '/profile', '/orders', '/tickets', '/lab', '/hints', '/architecture', '/compare', '/reset'] + [f'/lab/{i}' for i in range(1, 9)])
+@pytest.mark.parametrize('path', ['/', '/login', '/chat', '/profile', '/orders', '/tickets', '/lab', '/hints', '/architecture', '/compare', '/reset'] + [f'/lab/{i}' for i in range(1, 10)])
 def test_pages_render_with_banner(alice, path):
     response = alice.get(path)
     assert response.status_code == 200

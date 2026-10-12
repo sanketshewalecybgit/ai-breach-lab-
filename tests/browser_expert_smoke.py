@@ -79,8 +79,22 @@ def main():
                 page.reload()
                 expect(page.locator('#mission-memory .hint-usage')).to_contain_text('1 / 3')
 
-                read_reference('Dispatch reference')
+                with page.expect_download() as sample_download:
+                    page.get_by_role('link', name='Download the poisoned sample', exact=True).click()
+                sample_path = sample_download.value.path()
+                page.get_by_label('Reference document', exact=True).set_input_files({
+                    'name': 'rag-poisoning-sample.txt', 'mimeType': 'text/plain',
+                    'buffer': Path(sample_path).read_bytes()})
+                page.get_by_role('button', name='Upload to knowledge base', exact=True).click()
+                expect(page.get_by_role('heading', name='rag-poisoning-sample', exact=True)).to_be_visible()
+                uploaded_path = urlsplit(page.url).path
+                assert not evidence()['progress']
+                assert evidence()['interactions'][-1]['trace'][0]['tool'] == 'upload_document'
+                page.get_by_role('button', name='Ask the assistant to read this document').click()
+                expect(page).to_have_url(base + '/expert#activity')
                 assert 'reference' in evidence()['progress']
+                result = send('Search documents rag')
+                assert any(d['title'] == 'rag-poisoning-sample' for d in result['trace'][0]['result']['matches'])
                 read_reference('Agent handover')
                 assert 'memory' not in evidence()['progress']
                 page.reload()
@@ -113,6 +127,8 @@ def main():
                 page.get_by_role('button', name='Secure mode', exact=True).click()
                 expect(page).to_have_url(base + '/expert')
                 prior_exports = len(evidence()['outbox'])
+                read_reference('rag-poisoning-sample')
+                assert evidence()['interactions'][-1]['trace'][-1]['authorization'] == 'DENIED'
                 read_reference('Dispatch reference')
                 assert evidence()['interactions'][-1]['trace'][-1]['authorization'] == 'DENIED'
                 result = send(f'Check delivery {order_id}')
@@ -134,7 +150,7 @@ def main():
                 page.screenshot(path=str(artifacts / 'expert-desktop.png'))
                 for width in (1440, 768, 390, 320):
                     page.set_viewport_size({'width': width, 'height': 900})
-                    for path in ('/', '/lab', '/expert', '/expert/integration'):
+                    for path in ('/', '/lab', '/expert', '/expert/integration', uploaded_path):
                         page.goto(base + path)
                         fits = page.evaluate('document.documentElement.scrollWidth <= window.innerWidth')
                         if not fits:
@@ -165,7 +181,7 @@ def main():
                 assert not errors, errors
                 assert not external, external
                 browser.close()
-                print('PASS: five Expert scenarios, secure retests, hints, approvals, evidence download, fresh case, 320–1440px layouts; no JS errors or external requests.')
+                print('PASS: RAG sample download/upload/search/read, five Expert scenarios, secure retests, hints, approvals, evidence download, fresh case, 320–1440px layouts; no JS errors or external requests.')
         finally:
             server.shutdown()
             server.server_close()

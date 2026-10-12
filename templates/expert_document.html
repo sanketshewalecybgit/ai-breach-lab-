@@ -1,6 +1,7 @@
 {% extends 'base.html' %}{% block title %}Expert reference{% endblock %}{% block content %}
 <a class="back-link" href="{{ url_for('expert.workspace', _anchor='case-file') }}">← Expert case file</a>
 <div class="page-heading"><div class="eyebrow">{{ case.company }} / REFERENCE DOCUMENT</div><h1>{{ document.title }}</h1><p><code>{{ document.id }}</code> · Revision {{ document.revision }}</p></div>
+{% if document.uploaded %}<div class="notice mb-3"><strong>Uploaded knowledge-base document</strong><p class="mb-0">File: {{ document.filename }}. This reference is available in your case’s document search. Read it with the assistant below, then compare the trace and local outbox in vulnerable and secure modes.</p><a href="{{ url_for('expert.workspace', _anchor='rag-upload') }}">Return to RAG Poisoning lab →</a></div>{% endif %}
 <article class="card side-card"><pre class="response-text">{{ document.body }}</pre></article>
 <p class="small text-secondary mt-3">Reading this page does not invoke the assistant or award evidence.</p>
 <form action="{{ url_for('expert.chat') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="case_id" value="{{ case.id }}"><input type="hidden" name="message" value="Read document {{ document.id }}"><button class="btn btn-primary">Ask the assistant to read this document</button></form>

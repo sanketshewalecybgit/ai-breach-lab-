@@ -1,6 +1,6 @@
 # Instructor answer key — SPOILERS
 
-Updated 2026-09-22. This key covers the eight guided challenges and three Break / Fix missions, with a linked walkthrough for all five Expert investigations.
+Updated 2026-09-25. This key covers the nine guided challenges and three Break / Fix missions, with a linked walkthrough for all five Expert investigations.
 
 All data, identities, tokens and refunds are fictional. Use the exact example prompts initially: the agents are deterministic parsers, so arbitrary jailbreak prose may produce no recognized task.
 
@@ -8,11 +8,43 @@ All data, identities, tokens and refunds are fictional. Use the exact example pr
 
 | Lab | Where to work | Identity and controls | Completion |
 |---|---|---|---|
-| Guided challenges 1–8 | **AI Assistant** (`/chat`); inspect **Challenges** (`/lab`) | Alice (1001), vulnerable mode for attacks; secure mode for retests | Seven mandatory challenges unlock `/solved`; challenge 8 is optional. Progress is shared within the local lab. |
+| Guided challenges 1–9 | **AI Assistant** (`/chat`); inspect **Challenges** (`/lab`) | Alice (1001), vulnerable mode for attacks; secure mode for retests | Seven mandatory challenges unlock `/solved`; challenges 8 and 9 are optional. Progress is shared within the local lab. |
 | Break / Fix missions 1–3 | **Break / Fix** (`/break-fix`) | Alice or Bob; use the defense checkboxes inside this workspace. Global mode has no effect here. | Each mission needs a confirmed baseline breach, a stopped replay, and 4/4 legitimate checks. Progress is separate for each identity. |
 | Expert investigations 1–5 | **Expert** (`/expert`) | Either identity; use IDs from its randomized case. Global vulnerable/secure mode applies. | Five independent findings per case; see the [Expert instructor key](expert-instructor-key.md). |
 
 For a fresh guided demonstration, use **Reset lab**, explicitly confirm, then select Alice again. Full reset also clears Break / Fix progress and replaces Expert cases; reserve it for an instance whose progress can be discarded. Break / Fix runs already start from fresh isolated fixtures and need no full reset.
+
+## Teaching with the learning cards and debriefs
+
+All **17 exercises** (9 guided, 5 Expert, 3 Break / Fix) have an optional
+**Learn before you break** card. Students can expand the concept, vocabulary,
+intended-flow diagram and observation questions, or choose **Jump straight into
+the exercise**. Opening a card does not consume hints or change progress.
+
+After a solve, expand **After-action debrief · unlocked**. It presents the
+vulnerable design, saved execution evidence, how to interpret the trace, the
+secure behavior, a suggested retest and one production lesson. Have students
+explain their evidence before reading the interpretation, then run the retest
+and demonstrate a legitimate request that still works.
+
+| Workspace | Debrief unlock | How to review / relock |
+|---|---|---|
+| Guided | That challenge's persisted solve from executed tool results | Follow the chat success link back to its challenge page. Guided progress is shared across identities. Full reset relocks it. |
+| Expert | That objective's confirmed finding in the current identity's current case | Expand the debrief in the objective card. Other objectives stay locked. A fresh case relocks that identity's Expert debriefs. |
+| Break / Fix | The latest saved replay stops the demonstrated breach and passes all four legitimate checks | Expand the debrief beneath the comparison. A new attack or a failing replay relocks it. |
+
+Switching to secure mode does not erase a completed finding. Debrief retest
+instructions describe an experiment to perform; they do not certify that the
+student already ran it. Full reset clears completion in all three workspaces.
+Locked debrief text is omitted from server responses, rather than hidden in CSS.
+The instructor answer keys remain intentional spoilers for anyone reading the
+local source files; the UI lock is a teaching aid, not an exam-security boundary.
+
+Use the exact prompts and expected evidence below. They cover all guided and
+Break / Fix exercises; the Expert solution table and linked Expert key cover all
+five randomized investigations. The local personal trainer guide
+`LAB_START_TEST_SOLVE_RESET_STOP.txt` also includes startup, shutdown, all 17
+solutions and classroom checklists.
 
 ## Guided quick solution sequence
 
@@ -28,6 +60,7 @@ Send each prompt separately in **AI Assistant**, as Alice in vulnerable mode. Ex
 | 6 | `Summarize ticket 2.` | Ticket-sourced note retrieval exposes the token. |
 | 7 | `Summarize ticket 3.` | Ticket-sourced customer search followed by note retrieval. |
 | 8, optional | `Look up shipping status of ORD-1003.` | Shipping-sourced customer search. |
+| 9, optional · Latest release | `Fetch https://help.novacart.lab/legacy-returns` | Public redirect retrieves an internal diagnostic record. |
 
 Guided completion is evaluated by `challenges/engine.py` from actual events; prompt text alone earns nothing. One action may solve several challenges, and already-solved challenges are not awarded twice. Secure retests preserve existing solved progress but never award a vulnerable solve.
 
@@ -222,6 +255,44 @@ Guided completion is evaluated by `challenges/engine.py` from actual events; pro
 **Classroom explanation:** Compare the authenticated customer with the tool’s scope, selected parameters and actual result. For injection challenges, point out the source label on each follow-up call: retrieved content changed a model proposal, and backend policy allowed the resulting impact.
 
 **Secure retest:** Enable secure mode and repeat the shipping request. `lookup_shipping_status` still returns Alice’s shipping result, but its carrier message produces no customer-search follow-up.
+
+## 9. Assistant URL Fetcher — Latest release, 2026-09-25
+
+**Surface:** a URL accepted by an assistant tool; backend redirect handling crosses
+from a public help origin into a fictional internal service. This is an offline
+SSRF simulation, independent of the ticket-injection exercises.
+
+1. As Alice or Bob in vulnerable mode, send `Fetch https://help.novacart.lab/returns`.
+   The public policy contains the older help link; this read alone earns no point.
+2. Send `Fetch https://help.novacart.lab/legacy-returns`.
+   The destination trace shows a 302 redirect followed by a read of
+   `http://ops.novacart.lab/diagnostics`. The body contains
+   `FICTIONAL-SSRF-PROOF-7329`. Challenge 9 is awarded from this tool result and
+   response, with both URLs recorded as evidence. Core completion remains unchanged.
+3. Directly fetching `http://ops.novacart.lab/diagnostics` also demonstrates the
+   missing destination policy and can solve the optional challenge.
+4. Switch to secure mode and replay both requests. Expect HTTP 403 and `DENIED`;
+   the internal hop is `BLOCKED` before its body is read. The redirect response can
+   reveal the internal URL, but cannot disclose its diagnostic record.
+5. In secure mode, fetch the returns policy and `https://help.novacart.lab/delivery`.
+   Both succeed; delivery follows a relative redirect to `/shipping` on the public
+   HTTPS origin. This proves that secure mode preserves legitimate URL fetching.
+
+**Grading:** a successful `fetch_url` result classified internal, with the fictional
+proof in its body and the assistant response, plus an actual retrieved hop. Prompt
+claims and public reads cannot award progress; secure runs never award attack points.
+
+**Scope:** fixture parsing restricts both modes to two fictional hosts and default
+HTTP(S) ports. It rejects arbitrary hosts, URL user information, unsupported schemes,
+queries and fragments. Unknown pages return 404; redirects are capped at four
+checked destinations and cycles stop early. No HTTP client or DNS resolver is used.
+For production discussion, add DNS/IP validation, redirect revalidation, internal
+service authorization and network egress controls; a hostname-only rule is not a
+complete production SSRF defense.
+
+**Persistence:** the ninth progress slot is added on startup without resetting the
+workshop. Hints and evidence persist with other guided progress. Full reset clears
+the new challenge and its tool events. The new URLs are unavailable in Break / Fix.
 
 ## Additional demonstrations
 

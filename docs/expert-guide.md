@@ -38,6 +38,20 @@ The dispatch and handover references are editable, as is the delivery integratio
 
 The reference browser itself is limited to your company’s customer-visible material. Investigate the assistant’s retrieval behavior to assess broader access.
 
+## Upload a document: RAG Poisoning lab
+
+Open **RAG Poisoning** in the Expert workspace. Upload a UTF-8 `.txt` or `.md` document (up to 4,000 characters and 12 KiB; 20 uploads per case). The filename becomes its title. Text is stored in your case’s database record and added to keyword search; files are not executed or saved as web assets. PDF and Word extraction are not supported.
+
+For a reproducible exercise:
+
+1. Select **Vulnerable mode** and download the poisoned sample from this panel. Its embedded directive references your current case’s fictional internal document.
+2. Upload the sample. The resulting page lets you inspect and edit its text. Uploading and passive inspection alone do not complete an objective.
+3. Click **Ask the assistant to read this document**. Alternatively, run `Search documents rag`, then `Read document <returned ID>`.
+4. Inspect `read_document → export_document` in Activity. The export’s source points to the uploaded reference, and the review outbox contains the fictional internal content. This confirms **An unexpected attachment**.
+5. Switch to **Secure mode** and read the same uploaded document again. Its text remains readable; the document-sourced export is denied and no new outbox entry is added. Earlier evidence remains.
+
+You can also upload a benign reference: it is searchable and readable in both modes, with no injected action. Only the documented directive grammar proposes tool calls; arbitrary prose does not control a real language model. Uploads and their ingestion evidence survive reloads and are isolated by demo identity. A fresh case removes its uploads; full lab reset removes both identities’ uploads. Download a new sample after resetting because document IDs change.
+
 ## Approvals and memory
 
 Refund requests create proposals. Review the order, amount, and revision in the **Human approval desk**, check the confirmation box, and approve the displayed details. This records a five-minute approval snapshot; it does not execute a refund. The assistant executes proposals separately. Approval is a local human-confirmation demonstration, not separate manager authentication.

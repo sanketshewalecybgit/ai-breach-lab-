@@ -4,7 +4,16 @@ AI BreachLab is an intentionally vulnerable educational application. Run it on l
 
 ## Intended behavior
 
-Vulnerable mode deliberately demonstrates object authorization failures, excessive agency, invalid business actions, sensitive context exposure, indirect prompt injection, and unsafe tool chains. The challenge definitions and instructor answer key describe these exercises. They are expected behavior in vulnerable mode.
+Vulnerable mode deliberately demonstrates object authorization failures, excessive agency, invalid business actions, sensitive context exposure, indirect prompt injection, unsafe tool chains, and virtual URL-fetching SSRF. The challenge definitions and instructor answer key describe these exercises. They are expected behavior in vulnerable mode.
+
+Expert additionally simulates reference poisoning, persistent destination-memory contamination, cross-company document retrieval, changed/replayed/expired approval execution, and tool-description manipulation. The customer/review outboxes are local database records. Reference and integration editors can only alter fictional text. Each demo identity’s Expert case and evidence remain isolated by the server; bypassing that isolation through the workspace routes is not an intended challenge.
+
+The RAG Poisoning upload form accepts bounded UTF-8 `.txt`/`.md` references into the current identity’s case. Uploaded text is stored in SQLite, escaped when displayed, and searchable by the simulated assistant. Client filenames never determine filesystem paths. Ingestion does not execute instructions; retrieved directives use the same fixed capabilities and secure provenance checks as seeded references. Uploads cannot select their company or classification, and fresh-case/full-lab resets clear the corresponding uploaded references.
+
+The assistant URL fetcher resolves only fixed virtual fixtures, including a
+fictional public-to-internal redirect. Both modes reject arbitrary destinations;
+secure mode also restricts every destination to the public HTTPS origin. Actual
+network access, DNS resolution and host-file reads are outside this exercise.
 
 ## Unintended issues
 

@@ -2,11 +2,11 @@
 
 **Advanced AI Attack Surfaces · Created by GhostStag Security**
 
-**Beginner → Intermediate → Advanced → Expert** · 8 guided challenges + 5 Expert investigations + 3 Break / Fix missions · No API keys
+**Beginner → Intermediate → Advanced → Expert** · 9 guided challenges + 5 Expert investigations + 3 Break / Fix missions · No API keys
 
 [Quick start](#requirements-and-installation) · [Difficulty levels](#difficulty-levels) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)
 
-AI BreachLab is an independent contribution to AI security education: an intentionally vulnerable, hands-on training environment. Its NovaCart Support scenario connects a fictional customer support assistant to customer data and business tools. Deterministic mock agents convert supported tasks into fictional tool calls. Students inspect actual backend events, complete seven core challenges and one advanced challenge, then investigate five randomized Expert scenarios and retest in secure mode.
+AI BreachLab is an independent contribution to AI security education: an intentionally vulnerable, hands-on training environment. Its NovaCart Support scenario connects a fictional customer support assistant to customer data and business tools. Deterministic mock agents convert supported tasks into fictional tool calls. Students inspect actual backend events, complete seven core challenges and two optional advanced challenges, then investigate five randomized Expert scenarios and retest in secure mode.
 
 > This project is an intentionally vulnerable educational application. Run it only on localhost or an isolated training environment. Do not expose it publicly.
 
@@ -53,12 +53,57 @@ Choose a track on the homepage or filter the mission board at `/lab`. Each level
 |---|---|---|
 | **Beginner** | 1–2 | Identity, ownership, and tools with excessive access |
 | **Intermediate** | 3–5 | Unauthorized actions, invalid amounts, and sensitive context |
-| **Advanced** | 6–8 | Indirect injection, multi-step tool chains, and untrusted tool output |
+| **Advanced** | 6–9 | Indirect injection, tool chains, untrusted tool output, and virtual URL fetching / SSRF |
 | **Expert** | 5 independent objectives | Randomized case discovery, persistent effects, tenant isolation, and approval integrity |
 
 Beginner, Intermediate, and Advanced are curated difficulty tracks, not a switch that changes an attack's backend behavior. **Expert** opens a separate workspace at `/expert` with new data, tools, persistent workflows, and independent grading. Every track is available immediately. All challenges retain three optional progressive hints. Vulnerable/secure mode is a separate control for comparing attacks with defenses.
 
-Track progress includes every challenge in that track, including optional challenge 8 in Advanced. Overall lab completion requires only the seven core challenges. An executed chain can solve multiple challenges across tracks; filtering never changes or clears saved progress.
+Track progress includes every challenge in that track, including optional challenges 8 and 9 in Advanced. Overall lab completion requires only the seven core challenges. An executed chain can solve multiple challenges across tracks; filtering never changes or clears saved progress.
+
+## Learn before you break, reflect after you solve
+
+All 17 exercises (9 guided, 5 Expert and 3 Break / Fix) include optional learning
+cards with a short concept explanation, vocabulary, an intended-flow diagram and
+observation prompts. Expand **Learn before you break** or jump straight into the
+exercise. Reading never consumes a hint or changes progress; the controls and
+material work offline without additional dependencies.
+
+**After-action debriefs** unlock from recorded completion. They explain the
+vulnerable design, your saved evidence, the trace, secure behavior, a suggested
+retest and a lesson for real systems. Guided challenges unlock on a solve; Expert
+unlocks each objective in the current case; Break / Fix requires a stopped attack
+and four passing legitimate checks. Unsolved debrief text is omitted from the HTML.
+Reset relocks the corresponding material. Secure-mode retests preserve earlier
+findings, and suggested retests are not automatic proof of a student's defense.
+
+See the [complete instructor answer key](docs/instructor-answer-key.md) and
+[Expert solutions](docs/expert-instructor-key.md) for all 17 walkthroughs.
+
+## Latest release — Assistant URL Fetcher (2026-09-25)
+
+**Challenge 9**, optional Advanced, is marked **Latest release** on the homepage,
+mission board, challenge page and assistant. Open `/lab/9`, then use the assistant
+to fetch `https://help.novacart.lab/returns`. Read its links and inspect where a
+public redirect actually leads. The URL destination trace records each redirect,
+retrieved page or denied destination. Both Alice and Bob can complete the mission.
+
+Vulnerable mode can retrieve a fictional internal diagnostic record. Secure mode
+allows only the public HTTPS help origin and checks **every redirect target before
+reading its content**. Public returns and delivery pages remain usable. Completion
+requires actual internal-page content in an executed tool result; it adds an
+Advanced point without changing the seven-core completion target. Hints, evidence,
+and reset use the existing guided workflow.
+
+This is an **offline SSRF simulation**: `fetch_url(url)` reads a fixed in-memory
+catalogue. No HTTP request, DNS lookup or host-file access occurs, even in vulnerable
+mode. External hosts, unsupported schemes, credentials in URLs, non-default ports,
+query strings and fragments are rejected. Unknown virtual pages return 404;
+redirect loops and a four-destination limit stop further traversal. These fixture
+constraints keep the exercise reproducible; they are not a complete real-world
+SSRF implementation or mitigation benchmark.
+
+Restart after upgrading. The new progress slot is added automatically without
+resetting existing guided, Expert or Break / Fix state.
 
 ## Break it, then fix it
 
@@ -81,6 +126,8 @@ Choose **Expert** in the navigation or on the mission board. Each case has rando
 
 The five deeper scenarios cover knowledge-base poisoning, persistent memory contamination across interactions, cross-tenant document retrieval, approval tampering/replay, and tool-description manipulation. Students can edit selected reference documents and a fictional integration description. Exports go only to local customer/review outboxes; refunds are database simulations.
 
+**New: RAG Poisoning uploads.** Open **Expert → RAG Poisoning**, download the current case’s poisoned sample (or author your own UTF-8 `.txt`/`.md`), and upload it to the searchable knowledge base. Ask the assistant to read the uploaded document to observe its injected export in vulnerable mode, then repeat in secure mode to see the export denied. Uploading alone does not execute instructions or award progress. Limits: 4,000 characters, 12 KiB, and 20 uploads per case. This extends the existing reference objective using the local deterministic retrieval simulator; no model or embedding service is required.
+
 Expert provides source-linked traces, progressive hints, an explicit approval desk, persisted activity, and downloadable evidence. Its five-objective progress is independent of the seven-core solved screen. A confirmed fresh-case action randomizes only the current identity’s Expert workspace and retains the current security mode. See the [Expert student guide](docs/expert-guide.md) and [instructor key (spoilers)](docs/expert-instructor-key.md).
 
 The Expert agent is also deterministic, with documented task forms and a small editable-content directive grammar. It is not a real-model benchmark. It executes at most six tools per interaction. Secure mode independently blocks unauthorized effects while allowing legitimate summaries, delivery checks, and approved refunds, including when untrusted memory survives from vulnerable mode.
@@ -99,12 +146,13 @@ Existing installations gain Expert storage automatically at startup without rese
 | 6 | Advanced | Data or Instruction? | Ticket-based indirect prompt injection |
 | 7 | Advanced | One Result Leads to Another | Unsafe tool chain |
 | 8 | Advanced · optional | Tool Output Injection | Shipping-output injection |
+| 9 | Advanced · optional · **Latest release** | Assistant URL Fetcher | SSRF through a virtual URL and redirects |
 
 Go to `/lab` for objectives and progress. Hints reveal manually and record usage without reducing a score. Progress comes from executed tool results on the server; text claiming success cannot solve a challenge. Completing challenges 1–7 unlocks `/solved`.
 
 ## Using the agent
 
-Open `/chat` and send one task per message. The mock parser supports profile, order, customer-email lookup, refund, internal note, ticket, ticket creation and shipping intents. Include an object identifier where relevant. Refund amounts are **whole-number INR**, not paise. Inspect the collapsible **AI Debug / Tool Trace** after each response. Parser decision labels are explanatory state, not actual LLM reasoning.
+Open `/chat` and send one task per message. The mock parser supports profile, order, customer-email lookup, refund, internal note, ticket, ticket creation, shipping and virtual URL intents. Include an object identifier where relevant. Refund amounts are **whole-number INR**, not paise. Inspect the collapsible **AI Debug / Tool Trace** after each response. Parser decision labels are explanatory state, not actual LLM reasoning.
 
 The agent uses fixed intent rules, not a general-purpose language model. It does not obey arbitrary instructions. In vulnerable mode, retrieved ticket or carrier text containing a recognized `AI SUPPORT AGENT` / `AI assistant` marker can intentionally propose the allowlisted follow-up tools. This makes the injection exercise reproducible and supports student-created tickets; it is not a claim that real LLM behavior follows these exact rules. Each interaction has a finite four-call limit. Chat display is in-memory for the current page; executed tool events persist in SQLite.
 
@@ -119,6 +167,7 @@ Use the mode toggle or `/compare`. Secure mode:
 - Revalidates ownership and current business rules inside a write transaction when approval is confirmed.
 - Removes internal debug metadata before tool results enter agent context.
 - Treats retrieved ticket/shipping text as data and rejects tool transitions sourced from that content.
+- Checks the URL fetcher’s public HTTPS origin before every virtual fetch, including redirects.
 
 The approval panel is a **local human-confirmation demonstration**, not a separate manager authentication system. Both modes apply structural validation and fixed tool allowlists. The vulnerable policy intentionally skips semantic authorization/business checks. Secure mode does not erase earlier evidence or undo earlier fictional refunds. Reset first if a prior refund would affect a demonstration.
 
@@ -153,6 +202,11 @@ Both browser scripts accept `--chromium-executable /path/to/chromium` to use an 
 
 A decorative SVG robotic hand lifts, rotates, and gently flexes its fingers as the page scrolls. It stays behind the content, uses subtler movement on phones, and remains still when reduced motion is enabled. `tests/browser_motion_smoke.py` verifies scroll reversal, live motion preferences, mobile layouts, keyboard access, and the no-JavaScript fallback with an isolated database. It accepts the same `--chromium-executable` option. [View the robotic-hand preview](docs/images/robot-hand.png).
 
+The learning-card browser check uses another isolated database and covers all 17
+cards, debrief unlocks, keyboard controls, no-JavaScript forms, and 320–1440px
+layouts. Run `python tests/browser_learning_smoke.py`; it accepts the same
+`--chromium-executable` option as the other browser scripts.
+
 ## Architecture and source map
 
 ```text
@@ -175,7 +229,7 @@ docker-compose.yml
 requirements.txt
 ```
 
-No real credentials or service integrations exist. The only educational secret is a clearly fictional internal demo token. There is no shell execution, HTTP client, network scanner, user-selected host, payment gateway or email transport in application code. SQL uses parameterized values; HTML/text is escaped. Local host validation, CSRF tokens and a restrictive content security policy protect the classroom boundary without fixing the intended AI vulnerabilities.
+No real credentials or service integrations exist. Educational proof tokens and internal diagnostics are clearly fictional. There is no shell execution, HTTP client, DNS resolution, network scanner, payment gateway or email transport in application code. User-selected URLs resolve only against a fixed in-memory catalogue. SQL uses parameterized values; HTML/text is escaped. Local host validation, CSRF tokens and a restrictive content security policy protect the classroom boundary without fixing the intended AI vulnerabilities.
 
 ## Workshop materials
 

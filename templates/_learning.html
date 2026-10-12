@@ -1,0 +1,36 @@
+{% macro learning_card(lesson, key, exercise_url) %}
+<section class="study-card" aria-label="Optional preparation">
+  <div class="study-choice"><span class="eyebrow">OPTIONAL · READ FIRST OR TRY IT</span><a href="{{ exercise_url }}">Jump straight into the exercise →</a></div>
+  <details class="study-details" id="learn-{{ key }}">
+    <summary>Learn before you break</summary>
+    <div class="study-body">
+      <h3>The concept</h3><p>{{ lesson.learn.concept }}</p>
+      <h3>Vocabulary</h3><dl class="study-vocabulary">{% for term, definition in lesson.learn.vocabulary %}<dt>{{ term }}</dt><dd>{{ definition }}</dd>{% endfor %}</dl>
+      <figure class="study-diagram"><figcaption>Intended flow · follow the steps in order</figcaption><ol>{% for step in lesson.learn.flow %}<li><span>{{ step }}</span>{% if not loop.last %}<span class="study-arrow" aria-hidden="true">→</span>{% endif %}</li>{% endfor %}</ol></figure>
+      <h3>What to look for</h3><ul>{% for prompt in lesson.learn.watch %}<li>{{ prompt }}</li>{% endfor %}</ul>
+      <p class="small text-secondary mb-0">Reading this card is optional and does not use a hint or change your progress.</p>
+    </div>
+  </details>
+</section>
+{% endmacro %}
+
+{% macro debrief(lesson, key, evidence, locked_message, concept='') %}
+{% if lesson.debrief %}
+<details class="study-card study-debrief" id="debrief-{{ key }}">
+  <summary>After-action debrief · unlocked</summary>
+  <div class="study-body">
+    {% if concept %}<h3>{{ concept }}</h3>{% endif %}
+    <h3>The vulnerable design</h3><p>{{ lesson.debrief.design }}</p>
+    <h3>Execution evidence</h3>
+    <dl class="evidence-list study-evidence">{% for label, value in evidence.items() %}<dt>{{ label }}</dt><dd>{% if value is mapping or (value is sequence and value is not string) %}<pre>{{ value | tojson(indent=2) }}</pre>{% else %}{{ value }}{% endif %}</dd>{% endfor %}</dl>
+    <h3>How to read the trace</h3><p>{{ lesson.debrief.evidence }}</p>
+    <h3>Why the secure behavior works</h3><p>{{ lesson.debrief.defense }}</p>
+    <h3>Try the secure retest</h3><p>{{ lesson.debrief.retest }}</p>
+    <p class="small text-secondary">The evidence above records your completed exercise. The retest is a suggested next step, not a claim that you have already run it.</p>
+    <h3>Take it into a real system</h3><p class="mb-0">{{ lesson.debrief.takeaway }}</p>
+  </div>
+</details>
+{% else %}
+<section class="study-card study-locked" id="debrief-{{ key }}" aria-label="Locked after-action debrief"><strong>After-action debrief · locked</strong><p class="mb-0">{{ locked_message }}</p></section>
+{% endif %}
+{% endmacro %}

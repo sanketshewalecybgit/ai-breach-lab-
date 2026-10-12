@@ -1,0 +1,8 @@
+<section class="latest-release card p-4 my-4" aria-labelledby="latest-release-title">
+  <div class="d-flex flex-wrap align-items-center gap-2"><span class="release-badge">Latest release</span><time class="small text-secondary" datetime="{{ latest_release.released }}">25 Sep 2026</time><span class="difficulty-badge difficulty-advanced">Advanced · optional</span></div>
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-3">
+    <div><h2 id="latest-release-title">{{ latest_release.title }}</h2><p class="mb-0">A public link. A redirect. An internal destination.<br>Trace an SSRF attack, then check every destination in secure mode.</p></div>
+    <a class="btn btn-primary" href="{{ url_for('challenge', challenge_id=latest_release.id) }}">Explore the latest mission →</a>
+  </div>
+  <p class="small text-secondary mt-3 mb-0">Virtual pages · offline simulation · actual tool evidence</p>
+</section>

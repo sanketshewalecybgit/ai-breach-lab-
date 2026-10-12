@@ -1,5 +1,81 @@
 # Validation record
 
+## RAG Poisoning document uploads — 2026-10-12
+
+- Added identity-scoped UTF-8 `.txt`/`.md` ingestion to the Expert knowledge base,
+  a downloadable case-specific poisoned sample, and an upload/read/retest walkthrough.
+  Uploads use existing keyword retrieval, document provenance, secure enforcement,
+  and the reference objective; ingestion alone awards no progress.
+- Full regression: **226 passed in 52.04s**. The 18 added checks cover both demo
+  identities, sample retrieval and disclosure, secure denial, benign references,
+  escaped rendering, invalid formats/encoding/content/size, CSRF, authentication,
+  spoofed ownership, stale cases, persistence, resets, and upload count limits.
+- `tests/browser_expert_smoke.py`: **PASS** for sample download/upload/search/read,
+  all five Expert objectives, secure retests, evidence download and fresh-case reset.
+  Workspace and uploaded-document layouts fit at **320, 390, 768 and 1440px**.
+  No JavaScript errors or external application requests were observed.
+- Browser verification required execution outside the sandbox because localhost
+  sockets are restricted. It used a temporary server/database and shut down after
+  the checks. The workshop database was not opened and its normal server remains
+  stopped. Updated the student/instructor documentation and local source archive.
+
+## Learning cards and after-action debriefs — 2026-09-25
+
+- Added optional concept explanations, vocabulary, intended-flow diagrams and
+  observation prompts to all 17 exercises: nine guided, five Expert and three
+  Break / Fix. Native disclosures and jump links require no new dependencies.
+- Debriefs are gated by persisted server completion and omitted from locked HTML.
+  They include saved evidence, trace interpretation, vulnerable design, secure
+  behavior, a suggested retest and a practical takeaway. Guided progress remains
+  shared; Expert and Break / Fix remain identity-scoped. Break / Fix requires a
+  stopped breach and all four legitimate checks; new attacks or failed replays
+  revoke its debrief. Resets relock the corresponding material.
+- Full regression: **208 passed in 50.04s**, including 14 new checks for actual
+  event-based unlocks, locked response contents, per-objective/identity isolation,
+  resets, replacement attacks, failed fixes, page-title markup and escaped input.
+- `tests/browser_learning_smoke.py` covers all 17 learning cards, keyboard
+  expansion, jump links, locked/unlocked content, no-JavaScript form workflows,
+  and layouts at **320, 390, 768 and 1440px**. The browser check uses a temporary
+  database and localhost server, preserving workshop state. Desktop and mobile
+  guided screenshots were visually reviewed. Final browser run: **PASS**,
+  including unlocked guided, Expert and Break / Fix debriefs, reduced-motion
+  layouts and no-JavaScript Expert/Break / Fix forms; no page errors or external
+  requests were observed.
+- Updated the complete instructor answer key, Expert instructor key, demo flow,
+  student guide, README and the local personal trainer guide. The personal guide
+  now includes challenge 9, all three Break / Fix solutions, current counts,
+  secure retests and the learning/debrief workflow for all 17 exercises.
+- Rebuilt `dist/ai-breachlab.zip`; the packaging script checked archive integrity.
+
+## Assistant URL Fetcher — 2026-09-25
+
+- Added optional Advanced challenge 9, with Latest release labels on the homepage,
+  mission board/card, challenge detail and assistant. The fixed virtual catalogue
+  includes public pages, a legitimate redirect and a public-to-internal redirect.
+- Secure mode checks every destination before reading its fixture, including
+  redirect targets. Direct internal reads and redirected internal reads are denied;
+  public returns and delivery pages remain available. No HTTP, DNS or host-file I/O
+  is used. Both modes retain fixture validation, cycle detection and a four-hop cap.
+- Completion requires an executed internal result and proof in the response.
+  Guided hints/evidence persist; seven-core completion is unchanged. An additive
+  startup migration creates missing progress slots without resetting saved state.
+- Full backend regression: **194 passed in 36.00s**. Includes both identities,
+  direct/redirected SSRF, public redirects, independent backend enforcement,
+  URL parsing and containment, a socket/DNS tripwire, bounded traversal, evidence,
+  hint/UI integration, reset and migration preservation.
+- Browser verification initially exposed a weakness in the old test selector: it
+  clicked the sidebar’s explanatory text instead of the trace summary. The selector
+  now targets the actual summary and explicitly asserts that the panel opens.
+- Final guided browser verification: **PASS**, all nine challenges, secure retests,
+  actual trace expansion, new-mission prefill, hints, approvals and reset. Layouts
+  passed at **320, 390, 768 and 1440px** with no page errors or external application
+  requests. Visually reviewed the new mission board and the expanded mobile trace.
+  Refreshed README overview/mission-board images and `artifacts/url-fetcher-mobile.png`.
+- Rebuilt `dist/ai-breachlab.zip` with the new mission, fixtures, tests and docs;
+  the packaging tool checked archive integrity.
+- All tests use temporary databases; the normal workshop server remains stopped
+  and saved workshop data has not been opened or reset.
+
 ## Glass interface — 2026-09-22
 
 - Added frosted navigation tabs, reflective panel edges, rounded surfaces, brighter

@@ -1,0 +1,12 @@
+<section class="card side-card mt-4 url-workshop" aria-labelledby="url-catalogue-title">
+  <div class="eyebrow">CUSTOMER-HELP CATALOGUE</div><h2 id="url-catalogue-title">Follow the destination.</h2>
+  <p>Ask the assistant to fetch a URL below. Inspect the returned page for other links, then follow them in a separate request.</p>
+  <dl>
+    <dt>Returns policy</dt><dd><code>https://help.novacart.lab/returns</code></dd>
+    <dt>Delivery guide</dt><dd><code>https://help.novacart.lab/delivery</code></dd>
+  </dl>
+  <a class="btn btn-outline-primary align-self-start" href="{{ url_for('chat', challenge=9) }}">Start with the returns policy →</a>
+  <h3 class="mt-4">What to compare</h3>
+  <ol class="mb-0"><li>Which URL did you request, and which destination supplied the final content?</li><li>Did a redirect cross from customer help into an internal service?</li><li>Switch to secure mode and repeat the request. Confirm the internal content is blocked while the returns policy and delivery guide remain available.</li></ol>
+  <p class="small text-secondary mt-3 mb-0">These URLs identify pages inside the simulator. Enter them in the assistant; your browser does not need to open them. Every run is offline, with a maximum of four destination checks.</p>
+</section>

@@ -2,7 +2,7 @@
 
 All identifiers below are placeholders discovered from the current case. Each identity has separate Expert fixtures. Start in vulnerable mode. No fixed order/customer/document identifier is part of the success conditions.
 
-This guide covers the five Expert investigations. For the eight guided challenges
+This guide covers the five Expert investigations. For the nine guided challenges
 and three Break / Fix missions, use the [main instructor answer key](instructor-answer-key.md).
 
 ## Setup and how to submit solutions
@@ -26,21 +26,42 @@ A fresh Expert case changes the current identity’s randomized IDs and clears t
 case’s findings while preserving guided and Break / Fix progress. Full **Reset lab**
 clears all three workspaces; use it only when the instance’s progress can be discarded.
 
+## Learning cards and completion debriefs
+
+Each objective has an optional **Learn before you break** card with vocabulary,
+an intended-flow diagram and observation prompts. Students who prefer independent
+investigation can jump to the assistant. Vulnerability names and detailed solution
+explanations remain behind that objective's confirmed finding.
+
+After each solution below, return to its objective and expand **After-action
+debrief · unlocked**. Match the saved event/source IDs to **Activity** or the
+complete **Download evidence** file, especially when the activity panel's latest
+20 interactions no longer contain the original attack. Opening documents or
+reading cards does not unlock a debrief. For memory, require the separate later
+summary; for tenant isolation, require the actual document body; for approval,
+require execution of the mismatched, reused or expired approval.
+
+Alice and Bob unlock debriefs independently. Switching mode preserves findings;
+a fresh case relocks all five for that identity. A debrief's secure retest is an
+instruction to run, not an additional automatically awarded pass.
+
 ## Suggested 60–90 minute session
 
 Give students the business brief and let them inspect the case file before revealing vulnerability names. Allow roughly 10 minutes for discovery, 10 minutes per scenario, and 15–30 minutes for secure retests and discussion. Keep the syntax help available: parser guessing is not a learning objective.
 
 ## 1. An unexpected attachment
 
-Open **Dispatch reference** and inspect its automation appendix. Ask the assistant to read it. The document read proposes an export of an internal reconciliation document to the local review outbox.
+Open **Dispatch reference** and inspect its automation appendix. Send `Read document <dispatch document ID>` in the Expert assistant. The document read proposes an export of an internal reconciliation document to the local review outbox.
 
 Expected chain: `read_document → export_document`. Completion requires a successful internal-document export to review, with a source-linked successful document read in the same interaction. The reference title and original wording are not grading inputs; student-authored directives can also demonstrate the behavior.
 
 Secure retest: the customer-visible reference remains readable, but the export is denied by backend provenance policy. Direct requests to read or export the internal document are independently denied. Removing the directive produces only a document read in vulnerable mode too.
 
+Upload variant: open **RAG Poisoning**, download the sample for the current case, and upload it as a UTF-8 `.txt` document. Uploading records `upload_document` evidence but earns no objective. Use its **Ask the assistant to read this document** button, or search with `Search documents rag` and read the returned ID. The same `read_document → export_document` chain confirms the reference objective, with the uploaded document as its source. Secure mode still ingests and reads the reference but denies its export. A benign upload remains searchable/readable without side effects. Uploads accept `.txt`/`.md`, up to 4,000 characters and 12 KiB, with 20 per case; a fresh case removes uploads and invalidates old sample IDs.
+
 ## 2. A later task goes astray
 
-Read **Agent handover** through the assistant. Its directive writes a review destination to persistent memory. No objective is awarded yet.
+Send `Read document <Agent handover document ID>` through the Expert assistant. Its directive writes a review destination to persistent memory. No objective is awarded yet.
 
 In a separate task, request `Prepare support summary`. The summary tool reads the saved preference and exports the customer summary to review. The evidence links this export to the earlier memory-writing interaction and document source. Reloading the page between tasks demonstrates that memory is persistent.
 
@@ -88,4 +109,4 @@ Secure retest: metadata can be inspected and the requested delivery status still
 - `tests/test_expert.py`: randomized end-to-end cases, defenses, legitimate workflows, stale state, evidence isolation, and regression checks.
 - `tests/browser_expert_smoke.py`: isolated temporary server/database; browser workflows and responsive layouts.
 
-At most four embedded directives are proposed per retrieved result; an interaction executes at most six tools. No arbitrary tool names, paths, URLs, external destinations, code execution, or payment services are accepted. Every effect and all confidential material are fictional. Expert completion is separate from guided challenges 1–8 and the seven-core solved screen.
+At most four embedded directives are proposed per retrieved result; an interaction executes at most six tools. No arbitrary tool names, paths, URLs, external destinations, code execution, or payment services are accepted. Every effect and all confidential material are fictional. Expert completion is separate from guided challenges 1–9 and the seven-core solved screen.

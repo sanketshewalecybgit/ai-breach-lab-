@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from '_learning.html' import learning_card, debrief %}
 {% block title %}Expert investigation{% endblock %}
 {% macro fields() %}<input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="case_id" value="{{ case.id }}">{% endmacro %}
 {% macro task(message, label) %}<form action="{{ url_for('expert.chat') }}" method="post">{{ fields() }}<input type="hidden" name="message" value="{{ message }}"><button class="btn btn-outline-primary">{{ label }}</button></form>{% endmacro %}
@@ -9,11 +10,12 @@
   <div><strong>{{ case.progress|length }} / 5 objectives confirmed</strong><progress value="{{ case.progress|length }}" max="5" aria-label="Expert objectives confirmed"></progress><p class="small mt-2 mb-0">Expert evidence is separate from the guided challenges. Each demo identity has its own randomized case.</p></div>
 </section>
 <p class="small text-secondary mt-3">Security mode applies to new tasks. Earlier findings, disclosures, and simulated refunds remain in your evidence when you switch modes.</p>
-<nav class="difficulty-filters" aria-label="Expert workspace sections"><a href="#objectives">Objectives</a><a href="#case-file">Case file</a><a href="#assistant">Assistant</a><a href="#proposals">Approvals</a><a href="#activity">Activity</a><a href="#outbox">Local outboxes</a><a href="{{ url_for('expert.evidence') }}">Download evidence</a></nav>
+<nav class="difficulty-filters" aria-label="Expert workspace sections"><a href="#objectives">Objectives</a><a href="#case-file">Case file</a><a href="#rag-upload">RAG Poisoning</a><a href="#assistant">Assistant</a><a href="#proposals">Approvals</a><a href="#activity">Activity</a><a href="#outbox">Local outboxes</a><a href="{{ url_for('expert.evidence') }}">Download evidence</a></nav>
 <section id="objectives" aria-labelledby="objectives-title"><h2 id="objectives-title">Your investigation objectives</h2><p class="small text-secondary">Completion requires backend evidence. Claims of success and manually reading documents do not complete objectives.</p>
 <div class="row g-3">{% for mission in missions %}<div class="col-lg-6"><article id="mission-{{ mission.id }}" class="card challenge-card h-100 {% if mission.id in case.progress %}is-solved{% endif %}">
   <span class="status {{ 'solved' if mission.id in case.progress else '' }}">{{ '✓ EVIDENCE CONFIRMED' if mission.id in case.progress else 'OPEN INVESTIGATION' }}</span><h3>{{ mission.title }}</h3><p>{{ mission.objective }}</p>
-  {% if mission.id in case.progress %}<details class="trace"><summary>Review finding and evidence</summary><h4>{{ mission.concept }}</h4><p>{{ mission.explanation }}</p><pre>{{ case.progress[mission.id]|tojson(indent=2) }}</pre><p>Switch to secure mode and retest. Earlier evidence remains recorded.</p></details>{% endif %}
+  {{ learning_card(lessons[mission.id], 'expert-' ~ mission.id, '#assistant') }}
+  {{ debrief(lessons[mission.id], 'expert-' ~ mission.id, case.progress.get(mission.id, {}), 'Confirm this objective with executed evidence to unlock its debrief. Each objective unlocks separately for your current case.', mission.concept) }}
   {% if case.hints[mission.id] %}<ol class="hint-list">{% for hint in mission.hints[:case.hints[mission.id]] %}<li>{{ hint }}</li>{% endfor %}</ol>{% endif %}
   <form action="{{ url_for('expert.hint', mission_id=mission.id) }}" method="post" class="mt-3">{{ fields() }}<button class="btn btn-hint" {% if case.hints[mission.id] == 3 %}disabled{% endif %}>{{ 'All hints revealed' if case.hints[mission.id] == 3 else 'Reveal next hint' }}</button><span class="hint-usage">{{ case.hints[mission.id] }} / 3 hints used</span></form>
 </article></div>{% endfor %}</div></section>
@@ -21,6 +23,23 @@
 <div class="row g-4"><div class="col-lg-7"><div class="card side-card"><h3>Reference documents</h3><p>These documents are available to your assigned customer. The assistant also has a searchable document catalogue.</p><ul class="expert-documents">{% for document in documents %}<li><a href="{{ url_for('expert.document', document_id=document.id) }}">{{ document.title }}</a><code>{{ document.id }}</code><small>Revision {{ document.revision }}</small></li>{% endfor %}</ul><a href="{{ url_for('expert.integration') }}">Inspect the delivery integration →</a></div></div>
 <div class="col-lg-5"><div class="card side-card"><h3>Assigned orders</h3>{% for order in orders %}<div class="approval-item"><strong>{{ order.id }}</strong><p>Paid INR {{ order.paid }} · {{ order.status }}{% if order.refunded %} · Refunded{% endif %}</p>{{ task('Check delivery ' ~ order.id, 'Check delivery with assistant') }}</div>{% endfor %}</div>
 <div class="card side-card mt-3"><h3>Saved assistant preference</h3>{% if case.memory %}<p>Destination: <strong>{{ case.memory.destination }}</strong></p><details class="trace"><summary>Inspect memory provenance</summary><pre>{{ case.memory|tojson(indent=2) }}</pre></details>{% else %}<p class="mb-0">No destination preference has been saved.</p>{% endif %}<p class="small mt-2 mb-0">Preferences persist across tasks and page reloads. Secure mode checks whether saved preferences are trustworthy.</p></div></div></div></section>
+<section id="rag-upload" class="learning-section" aria-labelledby="rag-upload-title">
+  <div class="section-heading"><div><div class="eyebrow">UPLOAD → RETRIEVE → OBSERVE</div><h2 id="rag-upload-title">RAG Poisoning lab</h2></div><p>Add your own document to the knowledge base.</p></div>
+  <div class="row g-4">
+    <div class="col-lg-6"><form action="{{ url_for('expert.upload_document') }}" method="post" enctype="multipart/form-data" class="card side-card">
+      {{ fields() }}
+      <label for="rag-document" class="form-label">Reference document</label>
+      <input id="rag-document" name="document" type="file" accept=".txt,.md,text/plain,text/markdown" class="form-control" aria-describedby="rag-upload-help" required>
+      <p id="rag-upload-help" class="small text-secondary mt-2">UTF-8 .txt or .md · up to 4,000 characters and 12 KiB · 20 uploads per case. Use fictional content. Uploads persist in your case and appear in document searches.</p>
+      <button class="btn btn-primary align-self-start">Upload to knowledge base</button>
+    </form></div>
+    <div class="col-lg-6"><div class="card side-card">
+      <h3>Try a poisoned reference</h3>
+      <ol><li><a href="{{ url_for('expert.poison_sample', case_id=case.id) }}">Download the poisoned sample</a> for this case, or create your own text document.</li><li>Upload it, then choose <strong>Ask the assistant to read this document</strong>. You can also find it using <code>Search documents rag</code> and read its returned ID.</li><li>In vulnerable mode, inspect the document-sourced export and the local review outbox. Switch to secure mode and read the same document: the read works, but the injected export is denied.</li></ol>
+      <p class="small mb-0">This deterministic RAG simulation uses keyword search and document reads. Uploading alone executes nothing and earns no evidence. The sample can complete <strong>An unexpected attachment</strong> after the assistant reads it. Download a new sample after generating a fresh case.</p>
+    </div></div>
+  </div>
+</section>
 <section id="assistant" class="learning-section" aria-labelledby="assistant-title"><div class="section-heading"><div><div class="eyebrow">NOVACART / EXPERT ASSISTANT</div><h2 id="assistant-title">Investigate a task</h2></div><p>Deterministic simulator · {{ mode }} mode</p></div>
 <form action="{{ url_for('expert.chat') }}" method="post" class="card side-card">{{ fields() }}<label for="expert-message" class="form-label">Task for the assistant</label><textarea id="expert-message" name="message" class="form-control" rows="3" maxlength="4000" required placeholder="Search documents settlement"></textarea><div class="composer-bottom"><span class="small text-secondary">One task per message. Use the IDs from your current case.</span><button class="btn btn-primary">Run task →</button></div></form>
 <details class="trace mt-3"><summary>Task syntax help</summary><p>The simulator matches these task forms. It does not understand arbitrary natural-language instructions.</p><ul><li>Search documents &lt;words&gt;</li><li>Read document &lt;document ID&gt;</li><li>Prepare support summary</li><li>Check delivery &lt;order ID&gt;</li><li>Request refund INR &lt;amount&gt; for &lt;order ID&gt;</li><li>Revise proposal &lt;proposal ID&gt; to INR &lt;amount&gt;</li><li>Execute proposal &lt;proposal ID&gt;</li><li>Export document &lt;document ID&gt; to customer</li><li>Remember destination customer</li></ul><p>Amounts are whole-number INR. The only destinations are the local <code>customer</code> and <code>review</code> outboxes. No data leaves this application. Approvals require the human confirmation form below.</p></details></section>
