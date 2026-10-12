@@ -43,7 +43,7 @@ Dependencies require a one-time package download. Bootstrap CSS is bundled local
 
 Select Alice (1001, `alice@novacart.lab`) or Bob (1002, `bob@novacart.lab`) at `/login`. No passwords are accepted or needed. Start as Alice. Admin Demo (9001) is fictional seed data, not a selectable login identity. Use only fictional information in messages and tickets.
 
-Each local instance is intended for **one student**. Guided database state, progress, hints and mode are shared across identity changes and browser sessions. Expert gives Alice and Bob separate randomized cases and progress; the security mode remains shared. Different students should run separate instances. The session signing key is randomly generated at startup; a server restart requires selecting an identity again while saved lab progress remains.
+Each local instance is intended for **one student**. Guided progress, hints, mode and core database state are shared across identity changes and browser sessions. The standalone RAG lab isolates uploaded documents and activity by identity. Expert gives Alice and Bob separate randomized cases and progress; the security mode remains shared. Different students should run separate instances. The session signing key is randomly generated at startup; a server restart requires selecting an identity again while saved lab progress remains.
 
 ## Difficulty levels
 
@@ -53,16 +53,16 @@ Choose a track on the homepage or filter the mission board at `/lab`. Each level
 |---|---|---|
 | **Beginner** | 1–2 | Identity, ownership, and tools with excessive access |
 | **Intermediate** | 3–5 | Unauthorized actions, invalid amounts, and sensitive context |
-| **Advanced** | 6–9 | Indirect injection, tool chains, untrusted tool output, and virtual URL fetching / SSRF |
+| **Advanced** | 6–10 | Indirect injection, tool chains, untrusted tool output, virtual URL fetching / SSRF, and RAG poisoning |
 | **Expert** | 5 independent objectives | Randomized case discovery, persistent effects, tenant isolation, and approval integrity |
 
 Beginner, Intermediate, and Advanced are curated difficulty tracks, not a switch that changes an attack's backend behavior. **Expert** opens a separate workspace at `/expert` with new data, tools, persistent workflows, and independent grading. Every track is available immediately. All challenges retain three optional progressive hints. Vulnerable/secure mode is a separate control for comparing attacks with defenses.
 
-Track progress includes every challenge in that track, including optional challenges 8 and 9 in Advanced. Overall lab completion requires only the seven core challenges. An executed chain can solve multiple challenges across tracks; filtering never changes or clears saved progress.
+Track progress includes every challenge in that track, including optional challenges 8, 9 and 10 in Advanced. Overall lab completion requires only the seven core challenges. An executed chain can solve multiple challenges across tracks; filtering never changes or clears saved progress.
 
 ## Learn before you break, reflect after you solve
 
-All 17 exercises (9 guided, 5 Expert and 3 Break / Fix) include optional learning
+All 18 exercises (10 guided, 5 Expert and 3 Break / Fix) include optional learning
 cards with a short concept explanation, vocabulary, an intended-flow diagram and
 observation prompts. Expand **Learn before you break** or jump straight into the
 exercise. Reading never consumes a hint or changes progress; the controls and
@@ -77,12 +77,34 @@ Reset relocks the corresponding material. Secure-mode retests preserve earlier
 findings, and suggested retests are not automatic proof of a student's defense.
 
 See the [complete instructor answer key](docs/instructor-answer-key.md) and
-[Expert solutions](docs/expert-instructor-key.md) for all 17 walkthroughs.
+[Expert solutions](docs/expert-instructor-key.md) for all 18 walkthroughs.
 
-## Latest release — Assistant URL Fetcher (2026-09-25)
+## Latest release — standalone RAG Poisoning Lab (2026-10-12)
 
-**Challenge 9**, optional Advanced, is marked **Latest release** on the homepage,
-mission board, challenge page and assistant. Open `/lab/9`, then use the assistant
+**Challenge 10** appears under **Advanced**, with its own workspace at `/rag-poisoning`.
+Open its mission at `/lab/10`, then query `returns` to read the built-in guide.
+Download and upload the provided poisoned `.txt` reference, and repeat the query.
+The newest reference matching every keyword is retrieved. In vulnerable mode,
+its embedded directive exports fictional internal reconciliation to the local review
+outbox. In secure mode, the same reference remains readable and the export is denied.
+
+The lab has its own uploads, query form, source-linked activity, evidence download,
+three hints, and learning/debrief cards. It uses deterministic keyword retrieval;
+no embeddings, model API, network calls, or external exports are involved. Accepted
+uploads are UTF-8 `.txt`/`.md`, limited to 4,000 characters, 12 KiB, and 20 per identity.
+Uploading alone never executes instructions or awards progress.
+
+RAG documents, activity and outboxes are isolated by demo identity and separate
+from Expert. Challenge 10 completion and hints follow the shared guided progress
+model and do not affect the seven-core solved target. **Clear my RAG workspace**
+removes only that identity’s RAG documents and activity while retaining completion,
+hints and mode. Full **Reset lab** clears both RAG workspaces and their shared
+completion. Existing installations gain storage and the tenth progress slot on
+startup without resetting saved data. The Expert upload exercise remains available.
+
+## Assistant URL Fetcher (2026-09-25)
+
+**Challenge 9** is optional Advanced. Open `/lab/9`, then use the assistant
 to fetch `https://help.novacart.lab/returns`. Read its links and inspect where a
 public redirect actually leads. The URL destination trace records each redirect,
 retrieved page or denied destination. Both Alice and Bob can complete the mission.
@@ -146,7 +168,8 @@ Existing installations gain Expert storage automatically at startup without rese
 | 6 | Advanced | Data or Instruction? | Ticket-based indirect prompt injection |
 | 7 | Advanced | One Result Leads to Another | Unsafe tool chain |
 | 8 | Advanced · optional | Tool Output Injection | Shipping-output injection |
-| 9 | Advanced · optional · **Latest release** | Assistant URL Fetcher | SSRF through a virtual URL and redirects |
+| 9 | Advanced · optional | Assistant URL Fetcher | SSRF through a virtual URL and redirects |
+| 10 | Advanced · optional · **Latest release** | RAG Poisoning Lab | Uploaded references drive unauthorized tool calls |
 
 Go to `/lab` for objectives and progress. Hints reveal manually and record usage without reducing a score. Progress comes from executed tool results on the server; text claiming success cannot solve a challenge. Completing challenges 1–7 unlocks `/solved`.
 
@@ -202,7 +225,7 @@ Both browser scripts accept `--chromium-executable /path/to/chromium` to use an 
 
 A decorative SVG robotic hand lifts, rotates, and gently flexes its fingers as the page scrolls. It stays behind the content, uses subtler movement on phones, and remains still when reduced motion is enabled. `tests/browser_motion_smoke.py` verifies scroll reversal, live motion preferences, mobile layouts, keyboard access, and the no-JavaScript fallback with an isolated database. It accepts the same `--chromium-executable` option. [View the robotic-hand preview](docs/images/robot-hand.png).
 
-The learning-card browser check uses another isolated database and covers all 17
+The learning-card browser check uses another isolated database and covers all 18
 cards, debrief unlocks, keyboard controls, no-JavaScript forms, and 320–1440px
 layouts. Run `python tests/browser_learning_smoke.py`; it accepts the same
 `--chromium-executable` option as the other browser scripts.

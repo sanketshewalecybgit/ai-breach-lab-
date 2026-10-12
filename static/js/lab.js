@@ -68,6 +68,17 @@ if (chatForm) {
       data.trace.forEach((call, index) => {
         trace.append(element('h4', `${index + 1}. Selected tool: ${call.tool}`));
         trace.append(element('p', `Source: ${call.source}\nModel decision: ${call.decision}\nAuthorization check: ${call.authorization}`));
+        if (call.tool === 'fetch_url' && Array.isArray(call.result.hops)) {
+          trace.append(element('h4', 'URL destination trace'), element('p', 'Offline simulation · each row is a destination check.'));
+          const hops = element('ol', undefined, 'url-hops');
+          call.result.hops.forEach(hop => {
+            const row = element('li');
+            row.append(element('strong', hop.outcome), element('code', hop.url), element('small', `Destination policy: ${hop.policy}`));
+            if (hop.location) row.append(element('small', `Redirect to: ${hop.location}`));
+            hops.append(row);
+          });
+          trace.append(hops);
+        }
         trace.append(element('strong', 'Tool arguments'), element('pre', JSON.stringify(call.arguments, null, 2)));
         trace.append(element('strong', 'Backend result'), element('pre', JSON.stringify(call.result, null, 2)));
         if (call.result.requires_approval) {
@@ -89,8 +100,8 @@ if (chatForm) {
         const evidence = element('dl', undefined, 'evidence-list');
         Object.entries(solved.evidence).forEach(([label, value]) => evidence.append(element('dt', label), element('dd', String(value))));
         card.append(evidence);
-        const link = element('a', 'Review root cause and remediation →');
-        link.href = `/lab/${solved.id}`;
+        const link = element('a', 'Read your after-action debrief →');
+        link.href = `/lab/${solved.id}#debrief-guided-${solved.id}`;
         card.append(link);
         announcements.prepend(card);
       });

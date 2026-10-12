@@ -1,5 +1,5 @@
 CUSTOMER_TOOLS = {'get_profile', 'get_order', 'get_internal_note', 'read_ticket',
-                  'create_support_ticket', 'issue_refund', 'lookup_shipping_status'}
+                  'create_support_ticket', 'issue_refund', 'lookup_shipping_status', 'fetch_url'}
 
 
 def deny(reason, status=403):

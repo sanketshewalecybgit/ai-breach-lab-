@@ -28,7 +28,7 @@ def run(base, executable):
         page.on('request', lambda request: external.append(request.url) if urlsplit(request.url).hostname != '127.0.0.1' else None)
         page.goto(base + '/login')
         page.get_by_role('button', name='Continue as Alice').click()
-        for path, count in [(f'/lab/{i}', 1) for i in range(1, 10)] + [('/expert', 5)] + [('/break-fix?mission=' + m, 1) for m in ('ownership', 'injection', 'metadata')]:
+        for path, count in [(f'/lab/{i}', 1) for i in range(1, 11)] + [('/expert', 5)] + [('/break-fix?mission=' + m, 1) for m in ('ownership', 'injection', 'metadata')]:
             page.goto(base + path)
             expect(page.locator('.study-details')).to_have_count(count)
             expect(page.locator('.study-locked')).to_have_count(count)
@@ -43,7 +43,7 @@ def run(base, executable):
             for width in (1440, 768, 390, 320):
                 page.set_viewport_size({'width': width, 'height': 1000})
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), (path, width)
-        print('PASS: 17 optional learning cards, keyboard expansion and 320–1440px layouts.', flush=True)
+        print('PASS: 18 optional learning cards, keyboard expansion and 320–1440px layouts.', flush=True)
 
         page.goto(base + '/lab/1')
         page.get_by_role('link', name='Jump straight into the exercise').click()
@@ -102,7 +102,7 @@ def run(base, executable):
         assert not errors, errors
         assert not external, external
         browser.close()
-        print('PASS: all 17 learning cards, locked answers, solved debrief, keyboard, jump links, no-JS forms, 320–1440px layouts, no page errors or external requests.')
+        print('PASS: all 18 learning cards, locked answers, solved debrief, keyboard, jump links, no-JS forms, 320–1440px layouts, no page errors or external requests.')
 
 
 if __name__ == '__main__':

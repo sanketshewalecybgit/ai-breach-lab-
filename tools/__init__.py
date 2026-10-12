@@ -3,6 +3,7 @@ from .profile_tools import get_profile, search_customer
 from .order_tools import get_order, lookup_shipping_status
 from .support_tools import get_internal_note, read_ticket, create_support_ticket
 from .refund_tools import issue_refund
+from .url_tools import canonical_url, fetch_url
 from security import secure_policy, vulnerable_policy
 
 SCHEMAS = {
@@ -11,6 +12,7 @@ SCHEMAS = {
     'create_support_ticket': {'subject': str, 'message': str},
     'issue_refund': {'order_id': str, 'amount': int}, 'read_ticket': {'ticket_id': int},
     'lookup_shipping_status': {'order_id': str},
+    'fetch_url': {'url': str},
 }
 
 
@@ -30,6 +32,11 @@ def validate(name, args):
         return 'Only fictional @novacart.lab identities are supported.'
     if 'amount' in args and abs(args['amount']) > 10**9:
         return 'Simulation numeric limit exceeded.'
+    if name == 'fetch_url':
+        try:
+            canonical_url(args['url'])
+        except ValueError as error:
+            return str(error)
     return None
 
 
@@ -46,6 +53,10 @@ def execute(db, user, mode, name, args, source='user', approved=False):
                                 (user['id'], args['order_id'], args['amount']))
             result.update(requires_approval=True, approval_id=cursor.lastrowid)
         return result, decision['authorization']
+    if name == 'fetch_url':
+        result = fetch_url(args['url'], secure=mode == 'secure')
+        authorization = 'DENIED' if result.get('status') == 403 else decision['authorization']
+        return result, authorization
     if name == 'issue_refund':
         result = issue_refund(db, **args, authenticated_user=user['id'])
     elif name == 'create_support_ticket':

@@ -9,7 +9,7 @@ FILES = (
     'requirements.txt', 'requirements-dev.txt', 'pytest.ini', 'app.py', 'config.py',
 )
 # Only source/documentation extensions from these directories enter the archive.
-DIRECTORIES = ('.github', 'ai', 'challenges', 'database', 'docs', 'security',
+DIRECTORIES = ('.github', 'ai', 'challenges', 'database', 'docs', 'expert', 'security',
                'static', 'templates', 'tests', 'tools', 'scripts')
 EXTENSIONS = {'.py', '.sql', '.md', '.txt', '.html', '.css', '.js', '.svg', '.png', '.yml', '.yaml'}
 

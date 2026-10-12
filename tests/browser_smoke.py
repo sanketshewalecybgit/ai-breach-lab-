@@ -71,12 +71,13 @@ def run(BASE, chromium_executable):
         login()
         go('/lab')
         page.screenshot(path=str(IMAGES / 'mission-board.png'), full_page=True)
-        for level, count in [('beginner', 2), ('intermediate', 3), ('advanced', 4)]:
+        for level, count in [('beginner', 2), ('intermediate', 3), ('advanced', 5)]:
             page.get_by_role('navigation', name='Filter challenges by difficulty').get_by_role('link', name=level.title(), exact=True).click()
             expect(page.locator('[data-challenge-id]')).to_have_count(count)
             expect(page.locator('.level-card.is-selected')).to_have_attribute('aria-current', 'page')
+        go('/lab/10')
+        expect(page.get_by_text('Latest release · 2026-10-12', exact=True)).to_be_visible()
         go('/lab/9')
-        expect(page.get_by_text('Latest release · 2026-09-25', exact=True)).to_be_visible()
         page.get_by_role('link', name='Start with the returns policy').click()
         expect(page.get_by_label('Message the assistant')).to_have_value('Fetch https://help.novacart.lab/returns')
         assert send('Fetch https://help.novacart.lab/returns')['trace'][0]['result']['classification'] == 'public'

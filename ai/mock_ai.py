@@ -19,12 +19,20 @@ class MockAIProvider(AIProvider):
         def proposal(tool, arguments, decision):
             if tool not in available_tools:
                 return {'decision': 'Requested capability is outside the agent tool scope.',
-                        'message': 'Global customer search is unavailable in secure mode. I can show your own profile.'}
+                        'message': ('Global customer search is unavailable in secure mode. I can show your own profile.'
+                                    if tool == 'search_customer' else 'This tool is unavailable in this workspace.')}
             return {'tool': tool, 'arguments': arguments, 'decision': decision}
 
         if re.search(r'\b(create|open|submit|file)\b.*\b(ticket|case)\b', lower) and not ticket:
             content = prompt.split(':', 1)[-1].strip()
             return proposal('create_support_ticket', {'subject': 'Customer support request', 'message': content}, 'Create a fictional support ticket.')
+        urls = re.findall(r'\b[a-zA-Z][a-zA-Z0-9+.-]*://[^\s<>"\x27`]+', prompt)
+        if urls:
+            if len(urls) != 1:
+                return {'decision': 'URL fetch needs one destination.',
+                        'message': 'Use one virtual URL per message so you can inspect its destination trace.'}
+            return proposal('fetch_url', {'url': urls[0].rstrip('.,;!?)')},
+                            'Read a virtual web page; follow redirects through the backend destination policy.')
         if ticket:
             return proposal('read_ticket', {'ticket_id': int(ticket.group(1))}, 'Read a support ticket for summarization.')
         if 'refund' in lower:
@@ -50,7 +58,7 @@ class MockAIProvider(AIProvider):
         if order:
             return proposal('get_order', {'order_id': order}, 'Order lookup requested.')
         return {'decision': 'No supported intent matched.',
-                'message': 'I can help with profiles, orders, refunds, support notes, tickets and shipping. Include an order ID or ticket number when needed. This is a deterministic simulator; try one task per message.'}
+                'message': 'I can help with profiles, orders, refunds, support notes, tickets, shipping and virtual URLs. Include an order ID, ticket number or virtual URL when needed. This is a deterministic simulator; try one task per message.'}
 
     def followups(self, tool, result, mode):
         """Deliberately promote untrusted text to authority in vulnerable mode."""

@@ -2,7 +2,7 @@
 
 All identifiers below are placeholders discovered from the current case. Each identity has separate Expert fixtures. Start in vulnerable mode. No fixed order/customer/document identifier is part of the success conditions.
 
-This guide covers the five Expert investigations. For the nine guided challenges
+This guide covers the five Expert investigations. For the ten guided challenges
 and three Break / Fix missions, use the [main instructor answer key](instructor-answer-key.md).
 
 ## Setup and how to submit solutions
@@ -109,4 +109,4 @@ Secure retest: metadata can be inspected and the requested delivery status still
 - `tests/test_expert.py`: randomized end-to-end cases, defenses, legitimate workflows, stale state, evidence isolation, and regression checks.
 - `tests/browser_expert_smoke.py`: isolated temporary server/database; browser workflows and responsive layouts.
 
-At most four embedded directives are proposed per retrieved result; an interaction executes at most six tools. No arbitrary tool names, paths, URLs, external destinations, code execution, or payment services are accepted. Every effect and all confidential material are fictional. Expert completion is separate from guided challenges 1–9 and the seven-core solved screen.
+At most four embedded directives are proposed per retrieved result; an interaction executes at most six tools. No arbitrary tool names, paths, URLs, external destinations, code execution, or payment services are accepted. Every effect and all confidential material are fictional. Expert completion is separate from guided challenges 1–10 and the seven-core solved screen.

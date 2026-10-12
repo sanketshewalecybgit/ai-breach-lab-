@@ -1,6 +1,7 @@
 """Award progress from executed server-side tool events, never from prompt text."""
 import json
 from config import DEMO_TOKEN
+from tools.url_tools import PROOF
 from .definitions import BY_ID
 
 
@@ -11,6 +12,13 @@ def evaluate(db, user_id, mode, events, response):
     earned = {}
     for event in successful:
         name, args, result = event['tool'], event['arguments'], event['result']
+        if (name == 'fetch_url' and result.get('classification') == 'internal'
+                and PROOF in result.get('body', '') and PROOF in response
+                and any(hop.get('outcome') == 'RETRIEVED' for hop in result.get('hops', []))):
+            earned[9] = {'Tool': name, 'Requested URL': args['url'],
+                         'Retrieved internal URL': result['final_url'],
+                         'Destination path': ' → '.join(hop['url'] for hop in result['hops']),
+                         'Fictional proof': PROOF}
         if user_id == 1001 and name == 'get_order' and args['order_id'] == 'ORD-1002' and result.get('user_id') == 1002:
             earned[1] = {'Authenticated user': user_id, 'Requested object': args['order_id'], 'Object owner': result['user_id']}
         if user_id == 1001 and name == 'search_customer' and result.get('id') == 1002:

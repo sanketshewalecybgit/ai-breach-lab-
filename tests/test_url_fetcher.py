@@ -145,10 +145,10 @@ def test_unknown_page_claims_and_multiple_urls_do_not_solve(alice):
     assert not data['trace'] and not data['newly_solved']
 
 
-def test_latest_release_ui_hints_and_prefill(alice):
-    for path in ('/', '/lab', '/lab/9', '/chat'):
+def test_url_fetcher_ui_hints_and_prefill(alice):
+    for path in ('/lab', '/lab/9', '/chat'):
         page = alice.get(path).text
-        assert 'Latest release' in page and 'Assistant URL Fetcher' in page
+        assert 'Assistant URL Fetcher' in page
         assert url_tools.PROOF not in page
     assert 'ops.novacart.lab' not in alice.get('/lab/9').text
     assert f'Fetch {PUBLIC}/returns</textarea>' in alice.get('/chat?challenge=9').text

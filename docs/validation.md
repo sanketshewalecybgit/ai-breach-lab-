@@ -1,5 +1,33 @@
 # Validation record
 
+## Standalone Advanced RAG Poisoning Lab — 2026-10-12
+
+- Added optional guided challenge 10 and its independent `/rag-poisoning`
+  workspace. Uploads, keyword retrieval, local review outboxes and activity are
+  isolated by identity and separate from Expert. Completion and hints use shared
+  guided progress; the seven-core solved target remains unchanged. Startup adds
+  storage and the progress slot without resetting existing data.
+- Retrieval selects the newest reference matching every keyword. Only an actual
+  internal export sourced from a retrieved uploaded reference earns completion.
+  Secure backend policy denies the export while preserving the same retrieval.
+  Bounded text ingestion is shared with the existing Expert upload feature.
+- Full regression: **246 passed in 51.87s**. Coverage includes attack evidence,
+  secure and benign paths, false-positive prevention, per-identity and Expert
+  separation, migration, persistence, clear/full reset, validation, escaping,
+  CSRF, stale forms, upload limits, navigation, hints and debrief unlocks.
+  Updated the older URL-fetcher homepage assertion to reflect challenge 10
+  replacing it as the latest release; the URL mission and its tests remain.
+- `tests/browser_rag_smoke.py`: **PASS** for Advanced navigation, sample download,
+  upload/query/disclosure, secure and benign retests, hints, evidence download,
+  clearing, a no-JavaScript Bob flow, and **320/390/768/1440px** layouts. No page
+  errors or external requests. Desktop/mobile screenshots were visually reviewed:
+  `artifacts/rag-1440.png` and `artifacts/rag-390.png`.
+- Documentation links/anchors checked. Updated README, student and instructor
+  material, contributor/security notes and release archive. Tests used temporary
+  databases. Browser verification ran outside the sandbox because localhost
+  sockets are restricted, and its temporary server shut down after completion.
+  The normal workshop server remains stopped and saved workshop data was preserved.
+
 ## RAG Poisoning document uploads — 2026-10-12
 
 - Added identity-scoped UTF-8 `.txt`/`.md` ingestion to the Expert knowledge base,

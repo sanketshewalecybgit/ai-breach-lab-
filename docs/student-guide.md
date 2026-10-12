@@ -45,7 +45,7 @@ Each challenge has three manually revealed hints. Start with the objective and a
 
 ## Progress and retesting
 
-The server awards completion from actual tool results, not from a claim that an attack worked. A successful interaction may satisfy more than one challenge. Follow **Read your after-action debrief** back to the challenge page and expand the unlocked card. Review the saved evidence, vulnerable design, trace explanation, secure behavior and practical takeaway. Run the suggested secure retest yourself; the card does not record a retest pass. The dashboard counts seven mandatory challenges; challenges 8 and 9 are optional.
+The server awards completion from actual tool results, not from a claim that an attack worked. A successful interaction may satisfy more than one challenge. Follow **Read your after-action debrief** back to the challenge page and expand the unlocked card. Review the saved evidence, vulnerable design, trace explanation, secure behavior and practical takeaway. Run the suggested secure retest yourself; the card does not record a retest pass. The dashboard counts seven mandatory challenges; challenges 8, 9 and 10 are optional.
 
 Once all mandatory challenges are complete, open the **LAB SOLVED** screen. Then select **View defensive version** and switch to secure mode. Retest requests and compare traces. An eligible secure refund requires a separate human confirmation before the simulated action runs. No real money is ever moved.
 
@@ -59,11 +59,11 @@ Discuss at the end: which parts of the system proposed actions, and which parts 
 
 ## Choose a difficulty track
 
-Start with **Beginner** (challenges 1–2) to compare identity, ownership, and tool scope. Move to **Intermediate** (3–5) to inspect actions, business rules, and context exposure. **Advanced** (6–9) follows injected instructions through retrieved content and tool chains; challenges 8 and 9 are optional.
+Start with **Beginner** (challenges 1–2) to compare identity, ownership, and tool scope. Move to **Intermediate** (3–5) to inspect actions, business rules, and context exposure. **Advanced** (6–10) follows injected instructions through retrieved content and tool chains; challenges 8, 9 and 10 are optional.
 
 Use the three track cards or the difficulty filters on the mission board. Each challenge displays its level and an investigation approach. All levels are available from the start, and all retain three progressive hints. Difficulty groups the investigations by complexity; vulnerable/secure mode independently controls the backend defenses.
 
-Your level progress is saved automatically from executed evidence. An attack chain may complete challenges in more than one level. Seven core challenges complete the lab; the optional advanced challenges count toward their track but is not required for the solved screen.
+Your level progress is saved automatically from executed evidence. An attack chain may complete challenges in more than one level. Seven core challenges complete the lab; the optional advanced challenges count toward their track but are not required for the solved screen.
 
 ## Expert investigations
 
@@ -73,9 +73,30 @@ Expert has editable reference material, a delivery integration description, pers
 
 Alice and Bob have separate Expert cases. The security mode remains shared. Generating a fresh Expert case clears only that identity’s Expert work and retains the mode; the footer’s full lab reset clears both Expert cases and the guided lab.
 
-## Latest release: Assistant URL Fetcher
+## Latest release: standalone RAG Poisoning Lab
 
-Open **Latest release** on the mission board for optional Advanced challenge 9.
+Choose **Advanced → RAG Poisoning Lab** (challenge 10), then open its dedicated
+workspace. Query `returns` to inspect the built-in reference. Upload a UTF-8 `.txt`
+or `.md` document, or use the downloadable sample, and query again. Every search
+keyword must appear in the title or body; the newest matching document is selected.
+Compare the retrieved document with any subsequent tool call and its source.
+
+The lab accepts up to 4,000 characters and 12 KiB per reference, with 20 uploads per
+identity. Uploading and passive inspection alone earn nothing. Use the three hints
+if needed, then repeat a successful attack in secure mode and verify that useful
+retrieval still works. Expand the unlocked debrief after challenge 10 is confirmed.
+This is a deterministic keyword-retrieval simulator, not a real language model.
+
+Your uploads, activity and local review outbox are separate from Expert and from
+the other identity’s RAG workspace. Completion and hints are shared guided progress.
+**Download RAG evidence** saves the full activity and outbox; the page shows the
+latest 20 interactions and ten exports. **Clear my RAG workspace** removes your
+RAG data but retains completion, hints and mode. Full **Reset lab** clears both
+identities’ RAG data and shared progress. Expert’s fresh-case reset affects neither.
+
+## Assistant URL Fetcher
+
+Open **Assistant URL Fetcher** on the mission board for optional Advanced challenge 9.
 Start with `Fetch https://help.novacart.lab/returns` in the guided assistant.
 Read the returned page, follow its links in separate messages, and expand
 **AI Debug / Tool Trace → URL destination trace**. Compare your requested URL
@@ -89,7 +110,7 @@ The exercise does not contact websites or other machines.
 
 ## Optional learning and debriefs in every workspace
 
-All nine guided challenges, five Expert objectives and three Break / Fix missions
+All ten guided challenges, five Expert objectives and three Break / Fix missions
 include learning cards. Reading them does not use hints or affect progress. The
 cards and diagrams work offline and use native expand/collapse controls.
 

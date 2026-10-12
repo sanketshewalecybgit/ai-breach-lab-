@@ -8,13 +8,14 @@ from flask import Flask, abort, flash, g, jsonify, redirect, render_template, re
 from werkzeug.exceptions import SecurityError
 from config import DATABASE, MAX_PROMPT_LENGTH
 from database import get_db, close_db
-from database.seed import seed_database
+from database.seed import seed_database, initialize_progress
 from ai.agent import SupportAgent
-from challenges.definitions import CHALLENGES, BY_ID, LEVELS
+from challenges.definitions import CHALLENGES, BY_ID, LEVELS, LATEST_RELEASE
 from tools import execute
 from expert import cases as expert_cases
 from expert.routes import bp as expert_blueprint
-from challenges import breakfix
+from challenges import breakfix, rag
+from challenges.learning import lesson_view
 
 
 def create_app(test_config=None):
@@ -30,10 +31,13 @@ def create_app(test_config=None):
         db = get_db()
         if not db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'").fetchone():
             seed_database(db)
+        initialize_progress(db)
         expert_cases.initialize(db)
         breakfix.initialize(db)
+        rag.initialize(db)
     app.register_blueprint(expert_blueprint)
     app.register_blueprint(breakfix.bp)
+    app.register_blueprint(rag.bp)
 
     @app.before_request
     def local_request_context():
@@ -82,7 +86,7 @@ def create_app(test_config=None):
                 optional=sum(bool(c.get('optional')) for c in members),
             )
         return dict(identity=g.user, mode=g.mode, csrf_token=session['csrf_token'],
-                    challenges=CHALLENGES, progress=states,
+                    challenges=CHALLENGES, progress=states, latest_release=LATEST_RELEASE,
                     levels=LEVELS, level_progress=level_progress,
                     solved_count=sum(states[c]['solved'] for c in range(1, 8)))
 
@@ -109,8 +113,11 @@ def create_app(test_config=None):
     @app.get('/chat')
     @login_required
     def chat():
+        if request.args.get('challenge') == '10':
+            return redirect(url_for('rag.workspace'))
         approvals = get_db().execute("SELECT * FROM approvals WHERE requested_by = ? AND status = 'pending'", (g.user['id'],)).fetchall()
-        return render_template('chat.html', approvals=approvals)
+        return render_template('chat.html', approvals=approvals,
+                               url_fetcher_selected=request.args.get('challenge') == '9')
 
     @app.post('/api/chat')
     @login_required
@@ -193,7 +200,9 @@ def create_app(test_config=None):
     def challenge(challenge_id):
         if challenge_id not in BY_ID:
             abort(404)
-        return render_template('challenge.html', challenge=BY_ID[challenge_id])
+        state = progress()[challenge_id]
+        return render_template('challenge.html', challenge=BY_ID[challenge_id],
+                               lesson=lesson_view('guided', challenge_id, bool(state['solved'])))
 
     @app.get('/hints')
     def hints():
@@ -231,6 +240,8 @@ def create_app(test_config=None):
         flash(f'{mode.capitalize()} mode enabled. Retest requests in the assistant.', 'success')
         if request.form.get('return_to') == 'expert':
             return redirect(url_for('expert.workspace'))
+        if request.form.get('return_to') == 'rag':
+            return redirect(url_for('rag.workspace'))
         return redirect(url_for('chat'))
 
     @app.get('/solved')
@@ -248,6 +259,7 @@ def create_app(test_config=None):
             db = get_db()
             db.execute('BEGIN IMMEDIATE')
             expert_cases.reset(db)
+            rag.reset(db)
             db.execute('DELETE FROM breakfix_attempts')
             db.commit()
             session.clear()

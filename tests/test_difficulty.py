@@ -12,7 +12,7 @@ def rendered_ids(response):
 
 @pytest.mark.parametrize('level,expected', [
     ('beginner', [1, 2]), ('intermediate', [3, 4, 5]),
-    ('advanced', [6, 7, 8, 9]), ('all', list(range(1, 10))),
+    ('advanced', [6, 7, 8, 9, 10]), ('all', list(range(1, 11))),
 ])
 def test_level_filter_shows_only_matching_challenges(client, level, expected):
     response = client.get('/lab', query_string={'level': level})
@@ -22,7 +22,7 @@ def test_level_filter_shows_only_matching_challenges(client, level, expected):
 
 
 def test_default_board_contains_all_challenges(client):
-    assert rendered_ids(client.get('/lab')) == list(range(1, 10))
+    assert rendered_ids(client.get('/lab')) == list(range(1, 11))
 
 
 def test_unknown_level_rejected_without_affecting_progress(alice):
@@ -55,22 +55,22 @@ def test_track_progress_reflects_cross_track_evidence_and_reset(alice):
     page = alice.get('/lab?level=advanced').text
     assert '1 / 2 solved' in page  # Beginner: customer discovery.
     assert '1 / 3 solved' in page  # Intermediate: internal context.
-    assert '2 / 4 solved' in page  # Advanced: injection and chain.
+    assert '2 / 5 solved' in page  # Advanced: injection and chain.
     assert 'Solved: 4 / 7' in page
     assert 'Solved: 4 / 7' in alice.get('/lab?level=beginner').text
     post(alice, '/reset', {'confirm': 'yes'})
     page = alice.get('/lab').text
     assert '0 / 2 solved' in page
     assert '0 / 3 solved' in page
-    assert '0 / 4 solved' in page
+    assert '0 / 5 solved' in page
     assert 'Solved: 0 / 7' in page
 
 
 def test_optional_advanced_challenge_does_not_change_core_target(alice):
     chat(alice, 'Shipping status of ORD-1003')
     page = alice.get('/lab?level=advanced').text
-    assert '1 / 4 solved' in page
-    assert '2 core + 2 optional' in page
+    assert '1 / 5 solved' in page
+    assert '2 core + 3 optional' in page
     # The injected customer lookup also earns core challenge 2, not a second
     # core point for the optional shipping challenge itself.
     assert 'Solved: 1 / 7' in page

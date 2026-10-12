@@ -2,7 +2,7 @@
 
 Suggested repository name: **ai-breachlab**.
 
-Suggested description: **Hands-on AI security labs by GhostStag Security. Nine evidence-driven challenges across Beginner, Intermediate, and Advanced tracks, with vulnerable and secure modes.**
+Suggested description: **Hands-on AI security labs by GhostStag Security. Ten evidence-driven challenges across Beginner, Intermediate, and Advanced tracks, with vulnerable and secure modes.**
 
 Suggested topics: `ai-security`, `security-training`, `prompt-injection`, `llm-security`, `ctf`, `flask`, `educational`.
 

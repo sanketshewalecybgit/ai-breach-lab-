@@ -10,6 +10,7 @@ from config import MAX_PROMPT_LENGTH
 from database import get_db
 from database.seed import seed_database
 from tools import execute, validate
+from challenges.learning import lesson_view
 
 bp = Blueprint('breakfix', __name__)
 MISSIONS = {
@@ -185,7 +186,15 @@ def workspace():
     after = json.loads(row['after_json']) if row and row['after_json'] else None
     states = {r['mission']: bool(r['after_json'] and json.loads(r['after_json'])['passed'])
               for r in db.execute('SELECT mission, after_json FROM breakfix_attempts WHERE user_id=?', (g.user['id'],))}
+    debrief_evidence = {
+        'Saved attack': row['prompt'],
+        'Selected defenses': ', '.join(DEFENSES[key][0] for key in after['defenses']),
+        'Replay result': 'Attack stopped',
+        'Legitimate checks passed': f"{sum(check['passed'] for check in after['checks'])} / 4",
+    } if after and after['passed'] else {}
     return render_template('breakfix.html', missions=MISSIONS, mission=mission,
+        lesson=lesson_view('breakfix', mission, bool(after and after['passed'])),
+        debrief_evidence=debrief_evidence,
         exercise=MISSIONS[mission], defenses=DEFENSES, attempt=row, before=before, after=after,
         states=states, max_prompt=MAX_PROMPT_LENGTH,
         starter=MISSIONS[mission]['starter'].format(other=1002 if g.user['id'] == 1001 else 1001,

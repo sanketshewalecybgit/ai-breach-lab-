@@ -20,13 +20,24 @@ The simulator deliberately recognizes a small injection grammar; it is not a gen
 
 ## Optional URL-fetcher extension — 10 minutes
 
-Use [challenge 9's full solution](instructor-answer-key.md#9-assistant-url-fetcher--latest-release-2026-09-25).
+Use [challenge 9's full solution](instructor-answer-key.md#9-assistant-url-fetcher).
 In vulnerable mode, fetch `https://help.novacart.lab/returns`, then
 `https://help.novacart.lab/legacy-returns`. Follow the redirect and retrieved
 internal content in the destination trace. Open `/lab/9` and expand its unlocked
 debrief. In secure mode, replay the older link and inspect the blocked internal
 hop; fetch `https://help.novacart.lab/delivery` to demonstrate an allowed public
 redirect. All destinations are offline fixtures.
+
+## Optional standalone RAG extension — 10 minutes
+
+Use [challenge 10’s full solution](instructor-answer-key.md#10-rag-poisoning-lab--standalone-advanced).
+Open **Advanced → RAG Poisoning Lab**, query `returns` for the baseline, download
+and upload the standalone sample, then repeat the query. Inspect the selected
+uploaded reference, document-sourced export, and local review outbox. Switch to
+secure mode and repeat the same query: retrieval succeeds and export is denied.
+Upload a benign warranty reference and query it to demonstrate useful retrieval.
+This workspace has independent documents and activity; it awards guided challenge
+10 and does not require an Expert case. Budget extra time for its debrief.
 
 ## Using the learning material
 
@@ -37,7 +48,7 @@ successful legitimate request. Budget 2–3 extra minutes per exercise when usin
 both readings; the 30-minute core demonstration above assumes short discussions.
 
 The [complete answer key](instructor-answer-key.md) provides exact prompts,
-expected evidence and secure retests for all nine guided challenges and all three
+expected evidence and secure retests for all ten guided challenges and all three
 Break / Fix missions, plus the entry point to all five Expert solutions.
 
 ## Break / Fix extension — 20 minutes
