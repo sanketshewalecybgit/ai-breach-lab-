@@ -94,6 +94,14 @@ def create_app(test_config=None):
     def home():
         return render_template('home.html')
 
+    @app.get('/workspaces')
+    def workspaces():
+        return render_template('workspaces.html')
+
+    @app.get('/progress')
+    def progress_page():
+        return render_template('progress.html')
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':

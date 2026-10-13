@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Progress{% endblock %}
+{% block content %}
+<div class="page-heading"><div class="eyebrow">AI BREACHLAB</div><h1>Your progress</h1><p>Review guided challenge completion across your learning paths. These counts include saved progress shared across demo identities.</p></div>
+{% include '_levels.html' %}
+{% include '_guided_progress.html' %}
+<nav class="challenge-actions mt-4" aria-label="Progress details"><a href="{{ url_for('lab') }}">Review individual challenges</a><a href="{{ url_for('expert.workspace', _anchor='objectives') }}">Expert objectives and progress</a><a href="{{ url_for('breakfix.workspace') }}">Break / Fix results</a></nav>
+<p class="small text-secondary mt-3">Expert and Break / Fix track results separately for each demo identity. Open those workspaces to review their evidence and completion.</p>
+{% endblock %}

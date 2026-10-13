@@ -47,6 +47,12 @@ Each local instance is intended for **one student**. Guided progress, hints, mod
 
 ## Difficulty levels
 
+The main navigation groups the lab into **Overview**, **Challenges**, **Workspaces**,
+and **Progress**. Workspaces links to the AI Assistant, RAG lab, Expert, and
+Break / Fix. Orders, support tickets, and defensive comparisons are available
+from the NovaCart workspace. Progress shows the existing guided completion
+counts and links to the separate Expert and Break / Fix results.
+
 Choose a track on the homepage or filter the mission board at `/lab`. Each level shows its own saved completion count.
 
 | Level | Challenges | What you investigate |

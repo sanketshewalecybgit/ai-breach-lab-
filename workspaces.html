@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Workspaces{% endblock %}
+{% block content %}
+<div class="page-heading"><div class="eyebrow">AI BREACHLAB</div><h1>Workspaces</h1><p>Choose an investigation workspace or open a challenge from the mission board.</p></div>
+<div class="row g-4">
+  <div class="col-md-6"><section class="card side-card h-100"><h2>NovaCart AI Assistant</h2><p>Investigate profiles, orders, support tickets, tool calls, and virtual URLs.</p><a class="btn btn-primary align-self-start" href="{{ url_for('chat') }}">Open AI Assistant →</a><nav class="challenge-actions mt-3" aria-label="NovaCart investigation tools"><a href="{{ url_for('orders') }}">My Orders</a><a href="{{ url_for('tickets') }}">Support Tickets</a><a href="{{ url_for('compare') }}">Defensive Version</a></nav></section></div>
+  <div class="col-md-6"><section class="card side-card h-100"><h2>RAG Poisoning Lab</h2><p>Upload a reference, query its contents, and inspect the evidence for Advanced challenge 10.</p><a class="btn btn-primary align-self-start" href="{{ url_for('rag.workspace') }}">Open RAG lab →</a></section></div>
+  <div class="col-md-6"><section class="card side-card h-100"><h2>Expert</h2><p>Investigate five objectives in a randomized case with its own documents, tools, and recorded evidence.</p><a class="btn btn-primary align-self-start" href="{{ url_for('expert.workspace') }}">Open Expert →</a></section></div>
+  <div class="col-md-6"><section class="card side-card h-100"><h2>Break / Fix</h2><p>Expose a weakness, choose defenses, and replay the attack while checking legitimate requests.</p><a class="btn btn-primary align-self-start" href="{{ url_for('breakfix.workspace') }}">Open Break / Fix →</a></section></div>
+</div>
+<nav class="challenge-actions mt-4" aria-label="Investigation reference"><a href="{{ url_for('lab') }}">Choose a challenge</a><a href="{{ url_for('architecture') }}">Explore architecture</a></nav>
+{% endblock %}
